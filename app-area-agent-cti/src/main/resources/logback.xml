@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="false">
+    <contextName>yunhuni-app-area-agent</contextName>
+    <property name="APP_NAME" value="yunhuni-app-area-agent" />
+    <include resource="logback-develop.xml"/>
+
+</configuration>
