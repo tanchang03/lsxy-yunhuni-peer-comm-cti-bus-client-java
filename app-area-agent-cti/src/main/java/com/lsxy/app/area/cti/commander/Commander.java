@@ -15,9 +15,10 @@ public class Commander {
      *
      * @param localUnitId BUS单元ID
      */
-    public static int initiate(Byte localUnitId, CommanderCallback commanderCallback) {
+    public static int initiate(int localUnitId) {
         logger.debug(">>> initiate(localUnitId={})", localUnitId);
-        Integer errCode = com.lsxy.app.area.cti.busnetcli.Client.initiateLibrary(localUnitId);
+        unitId = (byte) localUnitId;
+        Integer errCode = com.lsxy.app.area.cti.busnetcli.Client.initiateLibrary(unitId);
         if (errCode != 0) {
             throw new RuntimeException(
                     String.format(
@@ -26,8 +27,8 @@ public class Commander {
                     )
             );
         }
-        unitId = localUnitId;
-        callback = commanderCallback;
+
+//        callback = commanderCallback;
         com.lsxy.app.area.cti.busnetcli.Client.setCallbacks(new LibCallbackHandler());
         logger.debug("<<< initiate -> {}", errCode);
         return errCode;
@@ -41,8 +42,8 @@ public class Commander {
 
 
     private static final Logger logger = LoggerFactory.getLogger(Commander.class);
-    static CommanderCallback callback;
-    static final Map<Byte, Client> clients = new ConcurrentHashMap<Byte, Client>();
+    static CommanderCallback callback = null;
+    static final Map<Integer, Client> clients = new ConcurrentHashMap<Integer, Client>();
     private static final Map<String, ResponseReceiver> outgoingRpcMap = new ConcurrentHashMap<String, ResponseReceiver>();
     private static final ScheduledThreadPoolExecutor outgoingRpcTimer = new ScheduledThreadPoolExecutor(Runtime.getRuntime().availableProcessors());
 
@@ -96,17 +97,18 @@ public class Commander {
      * @param port            BUS服务器端口
      * @return 新建的客户端对象
      */
-    public static Client createClient(Byte localClientId, Byte localClientType, String ip, short port, int queueCapacity) {
+    public static Client createClient(int localClientId, int localClientType, String ip, int port, int queueCapacity) {
         logger.debug(
                 ">>> createClient(localClientId={}, localClientType={}, ip={}, port={}, queueCapacity={})",
                 localClientId, localClientType, ip, port, queueCapacity
         );
-        Integer errCode = com.lsxy.app.area.cti.busnetcli.Client.createConnect(localClientId, localClientType, ip, port, "", (short) 0xff, "", "", "");
+        Integer errCode = com.lsxy.app.area.cti.busnetcli.Client.createConnect(
+                (byte) localClientId, (byte) localClientType, ip, (short) port, "", (short) 0xff, "", "", "");
         if (errCode != 0) {
             throw new RuntimeException(
                     String.format("com.lsxy.app.area.cti.busnetcli.Client.createConnect returns %d", errCode));
         }
-        Client client = new Client(unitId, localClientId, localClientType, ip, port, queueCapacity);
+        Client client = new Client(unitId, (byte)localClientId, (byte)localClientType, ip, (short)port, queueCapacity);
         clients.put(localClientId, client);
         logger.debug("<<< createClient -> {}", client);
         return client;

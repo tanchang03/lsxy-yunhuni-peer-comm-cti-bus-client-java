@@ -8,7 +8,6 @@
 #include "Client.h"
 #include <stdbool.h>
 #include <smartbus_netcli_interface.h>
-
 #include "globvars.h"
 #include "callbacks.h"
 

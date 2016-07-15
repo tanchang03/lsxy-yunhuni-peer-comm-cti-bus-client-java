@@ -15,9 +15,10 @@ class LibCallbackHandler implements com.lsxy.app.area.cti.busnetcli.Callbacks {
     private final Logger jniLogger = LoggerFactory.getLogger("busnetcli");
 
     public void globalConnect(byte unitId, byte clientId, byte clientType, byte status, String addInfo) {
-        if (Commander.callback == null)
-            return;
-        Commander.callback.globalConnect(unitId, clientId, clientType, ConnectStatus.valueOf((int) status), addInfo);
+        logger.info("Bus global connection envent: unitId={}, clientId={}, clientType={}, addInfo={}, status={}", unitId, clientId, clientType, addInfo, status);
+//        if (Commander.callback == null)
+//            return;
+//        Commander.callback.globalConnect(unitId, clientId, clientType, ConnectStatus.valueOf((int) status), addInfo);
     }
 
     public void connect(byte localClientId, int accessPointUnitId, int errorCode) {

@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Client {
-    Client(Byte unitId, Byte id, Byte type, String ip, short port, int queueCapacity) {
+    Client(byte unitId, byte id, byte type, String ip, short port, int queueCapacity) {
         this.unitId = unitId;
         this.id = id;
         this.type = type;
@@ -27,23 +27,23 @@ public class Client {
     }
 
     private Logger logger;
-    private Byte unitId;
-    private Byte id;
-    private Byte type;
+    private byte unitId;
+    private byte id;
+    private byte type;
     private String ip;
     private short port;
     private ClientCallback callback;
     ThreadPoolExecutor dataExecutor;
 
-    public Byte getUnitId() {
+    public byte getUnitId() {
         return unitId;
     }
 
-    public Byte getId() {
+    public byte getId() {
         return id;
     }
 
-    public Byte getType() {
+    public byte getType() {
         return type;
     }
 
@@ -55,7 +55,7 @@ public class Client {
         return port;
     }
 
-    public String deliverCreation(Byte dstUnitId, Byte dstClientId, String resourceName, Map<String, Object> params, ResponseReceiver receiver) throws Exception {
+    public String deliverCreation(int dstUnitId, int dstClientId, String resourceName, Map<String, Object> params, ResponseReceiver receiver) throws Exception {
         this.logger.debug(
                 ">>> deliverCreation(dstUnitId={}, dstClientId={}, resourceName={}, params={}, receiver={})",
                 dstUnitId, dstClientId, resourceName, params, receiver

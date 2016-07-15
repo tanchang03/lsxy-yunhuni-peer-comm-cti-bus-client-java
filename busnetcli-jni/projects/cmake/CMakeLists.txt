@@ -1,9 +1,13 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.1)
 
 PROJECT(busnetcli-jni)
 
 AUX_SOURCE_DIRECTORY(../../src SRC)
 ADD_LIBRARY ( ${PROJECT_NAME} SHARED ${SRC} )
+
+# Generate position-independent code (PIC) suitable for use in a shared library, if supported for the target machine.
+# JNI need this!
+SET(GCC_COVERAGE_COMPILE_FLAGS "-fpic")
 
 IF ( ${JAVA_INCLUDE_PATH} and ${JAVA_INCLUDE_PATH2} )
     INCLUDE_DIRECTORIES ( ${JAVA_INCLUDE_PATH} )
@@ -31,6 +35,7 @@ ELSE()
     ENDIF()
 ENDIF()
 
+# busnetcli
 if(NOT DEFINED ENV{BUSNETCLI_HOME})
     message(WARN, "Environment variable BUSNETCLI_HOME not defined, try using system includ and library path.")
 else()
@@ -38,3 +43,8 @@ else()
     LINK_DIRECTORIES(ENV{BUSNETCLI_HOME}/lib)
 endif()
 TARGET_LINK_LIBRARIES(${PROJECT_NAME} busnetcli)
+
+# pthread
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
+target_link_libraries(${PROJECT_NAME} Threads::Threads)

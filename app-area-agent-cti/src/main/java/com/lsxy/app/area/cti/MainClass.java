@@ -21,7 +21,7 @@ public class MainClass {
 
     public static void main(String[] args) throws Exception {
         logger.debug("initiate...");
-        Commander.initiate((byte) 20, null);
+        Commander.initiate(20);
         logger.debug("initiate OK!");
         Client client = Commander.createClient((byte) 0, (byte) 20, "192.168.2.100");
         logger.debug("client: {}", client);
