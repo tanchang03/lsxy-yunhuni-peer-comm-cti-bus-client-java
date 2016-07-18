@@ -9,7 +9,7 @@ import java.util.concurrent.ScheduledFuture;
  * 如果等待超时间，回调他的 timeout 方法.
  * Created by liuxy on 16-7-12.
  */
-public abstract class ResponseReceiver {
+public abstract class ResponseListener {
     private String id;
     private ScheduledFuture future;
     protected int timeout = 15000;

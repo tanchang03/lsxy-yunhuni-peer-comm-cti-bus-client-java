@@ -43,14 +43,14 @@ public class Commander {
     private static final Logger logger = LoggerFactory.getLogger(Commander.class);
     static CommanderCallback callback = null;
     static final Map<Integer, Client> clients = new ConcurrentHashMap<Integer, Client>();
-    private static final Map<String, ResponseReceiver> outgoingRpcMap = new ConcurrentHashMap<String, ResponseReceiver>();
+    private static final Map<String, ResponseListener> outgoingRpcMap = new ConcurrentHashMap<String, ResponseListener>();
     private static final ScheduledThreadPoolExecutor outgoingRpcTimer = new ScheduledThreadPoolExecutor(Runtime.getRuntime().availableProcessors());
 
     static {
         outgoingRpcTimer.setRemoveOnCancelPolicy(true);
     }
 
-    static void setOutgoingRpcReceiver(final ResponseReceiver receiver) {
+    static void setOutgoingRpcReceiver(final ResponseListener receiver) {
         logger.debug(">>> setOutgoingRpcReceiver(id={})", receiver.getId());
         ScheduledFuture fut = outgoingRpcTimer.schedule(() -> {
             logger.debug("OutgoingRpcReceiver(id={}) Timeout", receiver.getId());
@@ -67,20 +67,20 @@ public class Commander {
         logger.debug("<<< setOutgoingRpcReceiver(id={})", receiver.getId());
     }
 
-    static ResponseReceiver delOutgoingRpcReceiver(String rpcId) {
-        ResponseReceiver receiver = outgoingRpcMap.remove(rpcId);
+    static ResponseListener delOutgoingRpcReceiver(String rpcId) {
+        ResponseListener receiver = outgoingRpcMap.remove(rpcId);
         if (receiver == null) return null;
         receiver.getFuture().cancel(false);
         return receiver;
     }
 
-    static ResponseReceiver delOutgoingRpcReceiver(ResponseReceiver receiver) {
+    static ResponseListener delOutgoingRpcReceiver(ResponseListener receiver) {
         return delOutgoingRpcReceiver(receiver.getId());
     }
 
     static void outgoingRpcDone(Response response) {
         logger.debug(">>> outgoingRpcDone(response={})", response);
-        ResponseReceiver receiver = delOutgoingRpcReceiver(response.getId());
+        ResponseListener receiver = delOutgoingRpcReceiver(response.getId());
         if (receiver == null) {
             logger.warn("outgoingRpcDone(response={}) Not exists in OutgoingRpcReceiver map.", response);
             return;
@@ -107,7 +107,7 @@ public class Commander {
                 ">>> createClient(localClientId={}, localClientType={}, ip={}, port={}, queueCapacity={})",
                 localClientId, localClientType, ip, port, queueCapacity
         );
-        Integer errCode = com.lsxy.app.area.cti.busnetcli.Client.createConnect(
+        int errCode = com.lsxy.app.area.cti.busnetcli.Client.createConnect(
                 (byte) localClientId, (byte) localClientType, ip, (short) port, "", (short) 0xff, "", "", "");
         if (errCode != 0) {
             throw new RuntimeException(

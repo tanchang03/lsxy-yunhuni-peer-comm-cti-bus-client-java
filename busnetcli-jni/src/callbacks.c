@@ -1,5 +1,6 @@
 #include "callbacks.h"
 #include <stdlib.h>
+#include <string.h>
 #include <stdbool.h>
 #include <jni.h>
 #include "globvars.h"
@@ -50,19 +51,35 @@ void global_connect(void * arg, char unit_id, char client_id, char client_type,
 }
 
 void trace(const char * msg) {
+    if (!msg)
+        return;
+    if (!msg[0])
+        return;
+    size_t msg_sz = strlen(msg);
+    if (!msg_sz)
+        return;
     JNIEnv* env = get_current_thread_env();
-    jstring txt = (*env)->NewStringUTF(env, msg);
+    jbyteArray jbytes_msg = (*env)->NewByteArray(env, msg_sz);
+    (*env)->SetByteArrayRegion(env, jbytes_msg, 0, msg_sz, msg);
     (*env)->CallStaticVoidMethod(
         env, cls_client, meth_client_log,
-        txt, (jboolean) false
+        jbytes_msg, (jboolean) false
     );
 }
 
 void trace_err(const char * msg) {
+    if (!msg)
+        return;
+    if (!msg[0])
+        return;
+    size_t msg_sz = strlen(msg);
+    if (!msg_sz)
+        return;
     JNIEnv* env = get_current_thread_env();
-    jstring txt = (*env)->NewStringUTF(env, msg);
+    jbyteArray jbytes_msg = (*env)->NewByteArray(env, msg_sz);
+    (*env)->SetByteArrayRegion(env, jbytes_msg, 0, msg_sz, msg);
     (*env)->CallStaticVoidMethod(
         env, cls_client, meth_client_log,
-        txt, (jboolean) true
+        jbytes_msg, (jboolean) true
     );
 }

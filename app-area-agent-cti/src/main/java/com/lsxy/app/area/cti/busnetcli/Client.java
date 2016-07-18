@@ -6,6 +6,7 @@
  */
 package com.lsxy.app.area.cti.busnetcli;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 
 /**
@@ -130,8 +131,9 @@ public class Client {
         }
     }
 
-    protected static void callbackLog(String msg, boolean isErr) {
+    protected static void callbackLog(byte[] bytesMsg, boolean isErr) throws UnsupportedEncodingException {
         if (callbacks != null) {
+            String msg = new String(bytesMsg, "US-ASCII");
             callbacks.log(msg, isErr);
         }
     }

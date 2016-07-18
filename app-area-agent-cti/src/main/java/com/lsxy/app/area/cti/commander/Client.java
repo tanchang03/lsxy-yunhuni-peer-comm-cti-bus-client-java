@@ -56,7 +56,7 @@ public class Client {
         return port;
     }
 
-    public String deliverCreation(int dstUnitId, int dstIpscIndex, String resourceName, Map<String, Object> params, ResponseReceiver receiver) throws Exception {
+    public String deliverCreation(int dstUnitId, int dstIpscIndex, String resourceName, Map<String, Object> params, ResponseListener receiver) throws Exception {
         this.logger.debug(
                 ">>> deliverCreation(dstUnitId={}, dstIpscIndex={}, resourceName={}, params={}, receiver={})",
                 dstUnitId, dstIpscIndex, resourceName, params, receiver

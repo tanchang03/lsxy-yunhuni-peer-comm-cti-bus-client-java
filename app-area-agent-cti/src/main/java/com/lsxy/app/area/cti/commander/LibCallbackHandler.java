@@ -1,6 +1,7 @@
 package com.lsxy.app.area.cti.commander;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,9 +48,11 @@ class LibCallbackHandler implements com.lsxy.app.area.cti.busnetcli.Callbacks {
                     Response resp = null;
                     resp = mapper.readValue(bytes, Response.class);
                     Commander.outgoingRpcDone(resp);
-                } catch (IOException e) {
+                } catch (com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException e) {
+                    logger.warn("还没有实现的 JSON RPC");
+                }
+                catch (IOException e) {
                     logger.error("RPC response JSON error", e);
-                    return;
                 }
             });
         } catch (Exception e) {

@@ -9,8 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import com.lsxy.app.area.cti.commander.Client;
 import com.lsxy.app.area.cti.commander.Commander;
-import com.lsxy.app.area.cti.commander.ResponseReceiver;
-import com.lsxy.app.area.cti.commander.CreationResponseReceiver;
+import com.lsxy.app.area.cti.commander.ResponseListener;
 import com.lsxy.app.area.cti.commander.ResponseError;
 
 /**
@@ -24,12 +23,12 @@ public class MainClass {
         Commander.initiate(20);
         logger.debug("initiate OK!");
         Client client = Commander.createClient((byte) 0, (byte) 20, "192.168.2.100");
-        for (int i=0; i<100; ++i) {
+        for (int i = 0; i < 50; ++i) {
             Map<String, Object> params = new HashMap<String, Object>();
             params.put("from_uri", "");
-            params.put("to_uri", "192.168.0.17");
-            params.put("max_answer_seconds", 60);
-            client.deliverCreation(0, 0, "sys.call", params, new ResponseReceiver() {
+            params.put("to_uri", "192.168.2.100:5062");
+            params.put("max_answer_seconds", 15);
+            client.deliverCreation(0, 0, "sys.call", params, new ResponseListener() {
                 @Override
                 protected void onResult(Object result) {
                     logger.debug("onResult(result={})", result);

@@ -32,7 +32,7 @@ jint JNICALL Java_com_lsxy_app_area_cti_busnetcli_Client_initiateLibrary(
     meth_client_recvdata = (*env)->GetStaticMethodID(env, cls, "callbackData",
                            "(BBBBBBBB[B)V");
     meth_client_log = (*env)->GetStaticMethodID(env, cls, "callbackLog",
-                      "(Ljava/lang/String;Z)V");
+                      "([BZ)V");
     SmartBusNetCli_SetCallBackFn(connection, recvdata, disconnect, NULL,
                                  global_connect, NULL);
     SmartBusNetCli_SetTraceStr(trace, trace_err);
