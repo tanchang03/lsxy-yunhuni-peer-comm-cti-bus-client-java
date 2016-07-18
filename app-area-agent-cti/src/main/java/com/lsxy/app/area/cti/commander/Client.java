@@ -56,10 +56,10 @@ public class Client {
         return port;
     }
 
-    public String deliverCreation(int dstUnitId, int dstClientId, String resourceName, Map<String, Object> params, ResponseReceiver receiver) throws Exception {
+    public String deliverCreation(int dstUnitId, int dstIpscIndex, String resourceName, Map<String, Object> params, ResponseReceiver receiver) throws Exception {
         this.logger.debug(
-                ">>> deliverCreation(dstUnitId={}, dstClientId={}, resourceName={}, params={}, receiver={})",
-                dstUnitId, dstClientId, resourceName, params, receiver
+                ">>> deliverCreation(dstUnitId={}, dstIpscIndex={}, resourceName={}, params={}, receiver={})",
+                dstUnitId, dstIpscIndex, resourceName, params, receiver
         );
         // resourceName = IPSC 项目ID.流程ID
         String[] nameParts = resourceName.split(Pattern.quote("."), 2);
@@ -85,9 +85,14 @@ public class Client {
         Commander.setOutgoingRpcReceiver(receiver);
         // 调用 JNI 发送：启动 IPSC 流程
         try {
-            int fiId = com.lsxy.app.area.cti.busnetcli.Client.launchFlow(
-                    this.id, dstUnitId, dstClientId, projectId, flowId, 1, 0, w.toString()
+            this.logger.debug(
+                    "deliverCreation: >>> launchFlow(id={}, dstUnitId={}, dstIpscIndex={}, projectId={}, flowId={}, params={})",
+                    this.id, dstUnitId, dstIpscIndex, projectId, flowId, w.toString()
             );
+            int fiId = com.lsxy.app.area.cti.busnetcli.Client.launchFlow(
+                    this.id, dstUnitId, dstIpscIndex, projectId, flowId, 1, 0, w.toString()
+            );
+            this.logger.debug("deliverCreation: <<< launchFlow()->{}", fiId);
             if (fiId < 0)
                 throw new RuntimeException(String.format("com.lsxy.app.area.cti.busnetcli.Client.launchFlow() returns %d", fiId));
         } catch (Exception exc) {
@@ -96,10 +101,7 @@ public class Client {
             throw exc;
         }
         //返回 RPC ID
-        this.logger.debug(
-                "<<< deliverCreation(dstUnitId={}, dstClientId={}, resourceName={}, params={}, receiver={}) -> {}",
-                dstUnitId, dstClientId, resourceName, params, receiver, rpcId
-        );
+        this.logger.debug("<<< deliverCreation() -> {}", rpcId);
         return rpcId;
     }
 }

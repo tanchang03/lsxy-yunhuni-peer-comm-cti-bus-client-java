@@ -14,7 +14,7 @@ public abstract class ResponseReceiver {
     private ScheduledFuture future;
     protected int timeout = 15000;
 
-    protected abstract void onReceive(Object result);
+    protected abstract void onResult(Object result);
 
     protected abstract void onError(ResponseError error);
 

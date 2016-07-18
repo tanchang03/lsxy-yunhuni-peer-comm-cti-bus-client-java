@@ -8,20 +8,32 @@ public class ResponseError {
     private String message = null;
     private Object data = null;
 
+    @Override
+    public String toString() {
+        return String.format("<%s code=%d, message=%s, data=%s>", ResponseError.class, getCode(), getMessage(), getData());
+    }
+
     public int getCode() {
         return code;
+    }
+
+    public void setCode(int code) {
+        this.code = code;
     }
 
     public String getMessage() {
         return message;
     }
 
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
     public Object getData() {
         return data;
     }
 
-    @Override
-    public String toString() {
-        return String.format("<%s code=%d, message=%s, data=%s>", ResponseError.class, code, message, data);
+    public void setData(Object data) {
+        this.data = data;
     }
 }

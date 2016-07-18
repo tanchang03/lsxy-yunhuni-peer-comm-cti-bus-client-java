@@ -10,8 +10,6 @@ public class Head {
     public Head(byte cmd, byte cmdType,
                 byte srcUnitId, byte srcClientId, byte srcClientType,
                 byte dstUnitId, byte dstClientId, byte dstClientType) {
-        System.out.println(String.format("cmd=%d, cmdType=%d, srcUnitId=%d, srcClientId=%d, srcClientType=%d, dstUnitId=%d, dstClientId=%d, dstClientType=%d",
-                cmd, cmdType, srcUnitId, srcClientId, srcClientType, dstUnitId, dstClientId, dstClientType));
         this.cmd = cmd;
         this.cmdType = cmdType;
         this.srcUnitId = srcUnitId;
@@ -61,6 +59,14 @@ public class Head {
 
     public byte getDstClientType() {
         return dstClientType;
+    }
+
+    @Override
+    public String toString() {
+        return String.format(
+                "<%s cmd=%d, cmdType=%d, srcUnitId=%d, srcClientId=%d, srcClientType=%d, dstUnitId=%d, dstClientId=%d, dstClientType=%d>",
+                Head.class, cmd, cmdType, srcUnitId, srcClientId, srcClientType, dstUnitId, dstClientId, dstClientType
+        );
     }
 
 }

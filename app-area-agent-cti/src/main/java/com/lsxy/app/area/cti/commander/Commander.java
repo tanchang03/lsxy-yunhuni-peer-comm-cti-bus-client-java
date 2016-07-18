@@ -79,12 +79,18 @@ public class Commander {
     }
 
     static void outgoingRpcDone(Response response) {
+        logger.debug(">>> outgoingRpcDone(response={})", response);
         ResponseReceiver receiver = delOutgoingRpcReceiver(response.getId());
+        if (receiver == null) {
+            logger.warn("outgoingRpcDone(response={}) Not exists in OutgoingRpcReceiver map.", response);
+            return;
+        }
         if (response.getResult() != null) {
-            receiver.onReceive(response.getResult());
+            receiver.onResult(response.getResult());
         } else {
             receiver.onError(response.getError());
         }
+        logger.debug("<<< outgoingRpcDone(response={})", response);
     }
 
     /**

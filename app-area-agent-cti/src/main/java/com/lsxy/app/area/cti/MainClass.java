@@ -24,28 +24,30 @@ public class MainClass {
         Commander.initiate(20);
         logger.debug("initiate OK!");
         Client client = Commander.createClient((byte) 0, (byte) 20, "192.168.2.100");
-        logger.debug("client: {}", client);
-        logger.debug("deliverCreation...");
-        Map<String, Object> params = new HashMap<String, Object>();
-        client.deliverCreation(0, 0, "sys.call", params, new ResponseReceiver() {
-            @Override
-            protected void onReceive(Object result) {
-                logger.debug("onReceive(result={})", result);
-                String resId = (String) result;
-                logger.debug("onReceive: ResourceID={}", result);
-            }
+        for (int i=0; i<100; ++i) {
+            Map<String, Object> params = new HashMap<String, Object>();
+            params.put("from_uri", "");
+            params.put("to_uri", "192.168.0.17");
+            params.put("max_answer_seconds", 60);
+            client.deliverCreation(0, 0, "sys.call", params, new ResponseReceiver() {
+                @Override
+                protected void onResult(Object result) {
+                    logger.debug("onResult(result={})", result);
+                    String resId = (String) result;
+                    logger.debug("onResult: ResourceID={}", result);
+                }
 
-            @Override
-            protected void onError(ResponseError error) {
-                logger.error("onError:{}", error);
+                @Override
+                protected void onError(ResponseError error) {
+                    logger.error("onError:{}", error);
+                }
 
-            }
-
-            @Override
-            protected void onTimeout() {
-                logger.error("onTimeout");
-            }
-        });
+                @Override
+                protected void onTimeout() {
+                    logger.error("onTimeout");
+                }
+            });
+        }
 
         String inputStr = null;
         Scanner scanner = new Scanner(System.in);
