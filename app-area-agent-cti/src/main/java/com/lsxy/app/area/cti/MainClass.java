@@ -25,13 +25,9 @@ public class MainClass {
         logger.debug("initiate OK!");
         Client client = Commander.createClient((byte) 0, (byte) 20, "192.168.2.100");
         logger.debug("client: {}", client);
-        //Pause for 1 seconds
-        logger.debug("sleep...");
-        Thread.sleep(1000);
-        logger.debug("sleep end.");
         logger.debug("deliverCreation...");
         Map<String, Object> params = new HashMap<String, Object>();
-        client.deliverCreation((byte) 1, (byte) 0, "sys.call", params, new ResponseReceiver() {
+        client.deliverCreation(0, 0, "sys.call", params, new ResponseReceiver() {
             @Override
             protected void onReceive(Object result) {
                 logger.debug("onReceive(result={})", result);

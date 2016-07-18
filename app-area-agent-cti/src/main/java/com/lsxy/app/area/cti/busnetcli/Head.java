@@ -7,10 +7,11 @@ package com.lsxy.app.area.cti.busnetcli;
  */
 public class Head {
 
-    public Head(byte flag, byte cmd, byte cmdType, byte srcUnitId,
-                byte srcClientId, byte srcClientType, byte dstUnitId,
-                byte dstClientId, byte dstClientType) {
-        this.flag = flag;
+    public Head(byte cmd, byte cmdType,
+                byte srcUnitId, byte srcClientId, byte srcClientType,
+                byte dstUnitId, byte dstClientId, byte dstClientType) {
+        System.out.println(String.format("cmd=%d, cmdType=%d, srcUnitId=%d, srcClientId=%d, srcClientType=%d, dstUnitId=%d, dstClientId=%d, dstClientType=%d",
+                cmd, cmdType, srcUnitId, srcClientId, srcClientType, dstUnitId, dstClientId, dstClientType));
         this.cmd = cmd;
         this.cmdType = cmdType;
         this.srcUnitId = srcUnitId;
@@ -21,7 +22,6 @@ public class Head {
         this.dstClientType = dstClientType;
     }
 
-    private final byte flag;
     private final byte cmd;
     private final byte cmdType;
     private final byte srcUnitId;
@@ -30,10 +30,6 @@ public class Head {
     private final byte dstUnitId;
     private final byte dstClientId;
     private final byte dstClientType;
-
-    public byte getFlag() {
-        return flag;
-    }
 
     public byte getCmd() {
         return cmd;

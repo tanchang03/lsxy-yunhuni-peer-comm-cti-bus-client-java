@@ -27,7 +27,6 @@ public class Commander {
                     )
             );
         }
-
 //        callback = commanderCallback;
         com.lsxy.app.area.cti.busnetcli.Client.setCallbacks(new LibCallbackHandler());
         logger.debug("<<< initiate -> {}", errCode);
@@ -97,7 +96,7 @@ public class Commander {
      * @param port            BUS服务器端口
      * @return 新建的客户端对象
      */
-    public static Client createClient(int localClientId, int localClientType, String ip, int port, int queueCapacity) {
+    public static Client createClient(int localClientId, int localClientType, String ip, int port, int queueCapacity) throws InterruptedException {
         logger.debug(
                 ">>> createClient(localClientId={}, localClientType={}, ip={}, port={}, queueCapacity={})",
                 localClientId, localClientType, ip, port, queueCapacity
@@ -108,9 +107,10 @@ public class Commander {
             throw new RuntimeException(
                     String.format("com.lsxy.app.area.cti.busnetcli.Client.createConnect returns %d", errCode));
         }
-        Client client = new Client(unitId, (byte)localClientId, (byte)localClientType, ip, (short)port, queueCapacity);
+        Client client = new Client(unitId, (byte) localClientId, (byte) localClientType, ip, (short) port, queueCapacity);
         clients.put(localClientId, client);
         logger.debug("<<< createClient -> {}", client);
+        Thread.sleep(1000); //Pause for 1 seconds
         return client;
     }
 
@@ -122,7 +122,7 @@ public class Commander {
      * @param ip              BUS服务器IP地址
      * @return 新建的客户端对象
      */
-    public static Client createClient(Byte localClientId, Byte localClientType, String ip) {
+    public static Client createClient(Byte localClientId, Byte localClientType, String ip) throws InterruptedException {
         return createClient(localClientId, localClientType, ip, (short) 8088, 1024 * 4);
     }
 }

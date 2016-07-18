@@ -120,8 +120,12 @@ public class Client {
         }
     }
 
-    protected static void callbackData(int arg, byte localClientId, Head head, byte[] data) {
+    protected static void callbackData(byte cmd, byte cmdType,
+                                       byte srcUnitId, byte srcClientId, byte srcClientType,
+                                       byte dstUnitId, byte dstClientId, byte dstClientType,
+                                       byte[] data) {
         if (callbacks != null) {
+            Head head = new Head(cmd, cmdType, srcUnitId, srcClientId, srcClientType, dstUnitId, dstClientId, dstClientType);
             callbacks.data(head, data);
         }
     }

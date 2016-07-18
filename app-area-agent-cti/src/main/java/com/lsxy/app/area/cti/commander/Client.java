@@ -7,6 +7,7 @@ import java.io.Writer;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,7 +62,7 @@ public class Client {
                 dstUnitId, dstClientId, resourceName, params, receiver
         );
         // resourceName = IPSC 项目ID.流程ID
-        String[] nameParts = resourceName.split(".", 2);
+        String[] nameParts = resourceName.split(Pattern.quote("."), 2);
         String projectId = nameParts[0];
         String flowId = nameParts[1];
         // 调用流程， IPSC 流程中照这个 ID 进行 RPC 返回

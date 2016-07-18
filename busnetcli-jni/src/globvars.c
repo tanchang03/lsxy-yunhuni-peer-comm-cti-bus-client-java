@@ -9,6 +9,3 @@ jmethodID meth_client_connect = NULL;
 jmethodID meth_client_disconnect = NULL;
 jmethodID meth_client_globalconenct = NULL;
 jmethodID meth_client_log = NULL;
-
-jclass cls_head = NULL;
-jmethodID meth_head = NULL;
