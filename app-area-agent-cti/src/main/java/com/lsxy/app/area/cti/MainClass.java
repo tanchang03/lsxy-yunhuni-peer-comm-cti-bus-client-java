@@ -32,8 +32,6 @@ public class MainClass {
                 @Override
                 protected void onResult(Object result) {
                     logger.debug("onResult(result={})", result);
-                    String resId = (String) result;
-                    logger.debug("onResult: ResourceID={}", result);
                 }
 
                 @Override
@@ -48,7 +46,7 @@ public class MainClass {
             });
         }
 
-        String inputStr = null;
+        String inputStr;
         Scanner scanner = new Scanner(System.in);
         System.out.printf("started! Input \"quit\" or \"q\" to quit.\n");
         while (true) {

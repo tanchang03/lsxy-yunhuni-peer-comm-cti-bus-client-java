@@ -24,7 +24,7 @@ public class Client {
         int cpuCount = Runtime.getRuntime().availableProcessors();
         this.dataExecutor = new ThreadPoolExecutor(1, cpuCount, 1, TimeUnit.MINUTES, new ArrayBlockingQueue<Runnable>(queueCapacity, true));
         this.dataExecutor.prestartAllCoreThreads();
-        this.logger = LoggerFactory.getLogger(String.format("%s<%d:%d>", Client.class, unitId, id));
+        this.logger = LoggerFactory.getLogger(String.format("%s(%d,%d)", Client.class.toString(), unitId, id));
     }
 
     private Logger logger;
@@ -84,22 +84,19 @@ public class Client {
         receiver.setId(rpcId);
         Commander.setOutgoingRpcReceiver(receiver);
         // 调用 JNI 发送：启动 IPSC 流程
-        try {
-            this.logger.debug(
-                    "deliverCreation: >>> launchFlow(id={}, dstUnitId={}, dstIpscIndex={}, projectId={}, flowId={}, params={})",
-                    this.id, dstUnitId, dstIpscIndex, projectId, flowId, w.toString()
-            );
-            int fiId = com.lsxy.app.area.cti.busnetcli.Client.launchFlow(
-                    this.id, dstUnitId, dstIpscIndex, projectId, flowId, 1, 0, w.toString()
-            );
-            this.logger.debug("deliverCreation: <<< launchFlow()->{}", fiId);
-            if (fiId < 0)
-                throw new RuntimeException(String.format("com.lsxy.app.area.cti.busnetcli.Client.launchFlow() returns %d", fiId));
-        } catch (Exception exc) {
+        this.logger.debug(
+                "deliverCreation: >>> launchFlow(id={}, dstUnitId={}, dstIpscIndex={}, projectId={}, flowId={}, params={})",
+                this.id, dstUnitId, dstIpscIndex, projectId, flowId, w.toString()
+        );
+        int fiId = com.lsxy.app.area.cti.busnetcli.Client.launchFlow(
+                this.id, dstUnitId, dstIpscIndex, projectId, flowId, 1, 0, w.toString()
+        );
+        if (fiId < 0) {
             // 出错了，撤销接收器于等待队列
             Commander.delOutgoingRpcReceiver(receiver);
-            throw exc;
+            throw new RuntimeException(String.format("com.lsxy.app.area.cti.busnetcli.Client.launchFlow() returns %d", fiId));
         }
+        this.logger.debug("deliverCreation: <<< launchFlow()->{}", fiId);
         //返回 RPC ID
         this.logger.debug("<<< deliverCreation() -> {}", rpcId);
         return rpcId;

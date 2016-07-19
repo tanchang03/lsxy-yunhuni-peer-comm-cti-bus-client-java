@@ -18,7 +18,7 @@ public class Commander {
     public static int initiate(int localUnitId) {
         logger.debug(">>> initiate(localUnitId={})", localUnitId);
         unitId = (byte) localUnitId;
-        Integer errCode = com.lsxy.app.area.cti.busnetcli.Client.initiateLibrary(unitId);
+        int errCode = com.lsxy.app.area.cti.busnetcli.Client.initiateLibrary(unitId);
         if (errCode != 0) {
             throw new RuntimeException(
                     String.format(
@@ -57,9 +57,9 @@ public class Commander {
             try {
                 outgoingRpcMap.remove(receiver.getId());
                 receiver.onTimeout();
-            } catch (Exception exc) {
-                logger.error(String.format("outgoingRpcTimer schedule error(id=%s)", receiver.getId()), exc);
-                throw exc;
+            } catch (Exception e) {
+                logger.error(String.format("outgoingRpcTimer schedule error(id=%s)", receiver.getId()), e);
+                throw e;
             }
         }, receiver.getTimeout(), TimeUnit.MILLISECONDS);
         receiver.setFuture(fut);
@@ -128,7 +128,7 @@ public class Commander {
      * @param ip              BUS服务器IP地址
      * @return 新建的客户端对象
      */
-    public static Client createClient(Byte localClientId, Byte localClientType, String ip) throws InterruptedException {
+    public static Client createClient(int localClientId, int localClientType, String ip) throws InterruptedException {
         return createClient(localClientId, localClientType, ip, (short) 8088, 1024 * 4);
     }
 }

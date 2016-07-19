@@ -50,8 +50,7 @@ class LibCallbackHandler implements com.lsxy.app.area.cti.busnetcli.Callbacks {
                     Commander.outgoingRpcDone(resp);
                 } catch (com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException e) {
                     logger.warn("还没有实现的 JSON RPC");
-                }
-                catch (IOException e) {
+                } catch (IOException e) {
                     logger.error("RPC response JSON error", e);
                 }
             });
