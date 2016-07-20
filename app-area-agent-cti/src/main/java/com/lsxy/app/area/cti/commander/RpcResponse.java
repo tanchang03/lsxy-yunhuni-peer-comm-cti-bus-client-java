@@ -3,17 +3,17 @@ package com.lsxy.app.area.cti.commander;
 /**
  * Created by liuxy on 16-7-13.
  */
-public class Response {
+public class RpcResponse {
     private String id;
     private Object result = null;
-    private ResponseError error = null;
+    private RpcError error = null;
 
     @Override
     public String toString() {
         if (this.getError() == null)
-            return String.format("<%s id=%s, error=%s>", Response.class, this.getId(), this.getError());
+            return String.format("<%s id=%s, error=%s>", RpcResponse.class, this.id, this.error);
         else
-            return String.format("<%s id=%s, result=%s>", Response.class, this.getId(), this.getResult());
+            return String.format("<%s id=%s, result=%s>", RpcResponse.class, this.id, this.result);
     }
 
 
@@ -33,11 +33,11 @@ public class Response {
         this.result = result;
     }
 
-    public ResponseError getError() {
+    public RpcError getError() {
         return error;
     }
 
-    public void setError(ResponseError error) {
+    public void setError(RpcError error) {
         this.error = error;
     }
 }

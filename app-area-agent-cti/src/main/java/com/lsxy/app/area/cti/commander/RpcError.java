@@ -3,14 +3,14 @@ package com.lsxy.app.area.cti.commander;
 /**
  * Created by liuxy on 16-7-13.
  */
-public class ResponseError {
+public class RpcError {
     private int code;
     private String message = null;
     private Object data = null;
 
     @Override
     public String toString() {
-        return String.format("<%s code=%d, message=%s, data=%s>", ResponseError.class, getCode(), getMessage(), getData());
+        return String.format("<%s code=%d, message=%s, data=%s>", RpcError.class, getCode(), getMessage(), getData());
     }
 
     public int getCode() {

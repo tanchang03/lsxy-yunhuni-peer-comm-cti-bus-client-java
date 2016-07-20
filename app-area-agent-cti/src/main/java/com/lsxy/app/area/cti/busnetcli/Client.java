@@ -69,7 +69,7 @@ public class Client {
      * @param ipscIndex     目标clientid projectid
      * @param projectId     目标流程的ProjectID
      * @param title         通知的标示
-     * @param mode          调用模式
+     * @param mode          调用模式。目前无意义，一律使用0
      * @param expires       消息有效期。单位ms
      * @param param         消息数据
      * @return 返回值：> 0 invoke_id，调用ID。< 0 表示错误。

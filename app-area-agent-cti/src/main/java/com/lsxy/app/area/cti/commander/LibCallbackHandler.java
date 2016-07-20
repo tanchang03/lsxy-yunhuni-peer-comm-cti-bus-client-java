@@ -1,12 +1,10 @@
 package com.lsxy.app.area.cti.commander;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 import com.lsxy.app.area.cti.busnetcli.Head;
 
@@ -34,31 +32,50 @@ class LibCallbackHandler implements com.lsxy.app.area.cti.busnetcli.Callbacks {
     }
 
     public void data(Head head, byte[] bytes) {
-        logger.debug(">>> data: head={}. data-length={}", head, bytes.length);
-        try {
-            int clientId = (int) head.getDstClientId();
-            Client client = Commander.clients.get(clientId);
-            if (client == null) {
-                logger.warn("data: Can not find the client<id={}>", clientId);
-                return;
-            }
-            client.dataExecutor.execute(() -> {
+        logger.debug(">>> data(head={}. dataLength={})", head, bytes.length);
+        byte clientId = head.getDstClientId();
+        Client client = Commander.clients.get(clientId);
+        if (client == null) {
+            logger.error("cannot find client<id={}>", clientId);
+            return;
+        }
+        client.dataExecutor.execute(() -> {
+            try {
+                String rpcTxt = new String(bytes, "UTF-8");
+                RpcRequest req = null;
+                RpcResponse res = null;
+                // 收到了RPC事件通知？
+                if (client.eventListener != null) {
+                    try {
+                        ObjectMapper mapper = new ObjectMapper();
+                        req = mapper.readValue(rpcTxt, RpcRequest.class);
+                    } catch (JsonProcessingException ignore) {
+
+                    }
+                    if (req != null) {
+                        client.logger.debug(">>> client.eventListener.onEvent({})", req);
+                        client.eventListener.onEvent(req);
+                        client.logger.debug("<<< client.eventListener.onEvent()");
+                        return;
+                    }
+                }
+                // 收到了RPC调用回复？
                 try {
                     ObjectMapper mapper = new ObjectMapper();
-                    Response resp = null;
-                    resp = mapper.readValue(bytes, Response.class);
-                    Commander.outgoingRpcDone(resp);
-                } catch (com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException e) {
-                    logger.warn("还没有实现的 JSON RPC");
-                } catch (IOException e) {
-                    logger.error("RPC response JSON error", e);
+                    res = mapper.readValue(rpcTxt, RpcResponse.class);
+                } catch (JsonProcessingException ignore) {
                 }
-            });
-        } catch (Exception e) {
-            logger.error("data: error: head={}, data={}", head, bytes, e);
-            throw e;
-        }
-        logger.debug("<<< data");
+                if (res != null) {
+                    Commander.rpcResponded(res);
+                    return;
+                }
+                // 既不是RPC事件通知，也不是RPC请求回复，只能忽略了。
+                client.logger.warn("unsupported RPC content received: {}", rpcTxt);
+            } catch (Exception e) {
+                client.logger.error("error occurred in dataExecutor.execute()", e);
+            }
+        });
+        logger.debug("<<< data()");
     }
 
     public void log(String msg, Boolean isErr) {

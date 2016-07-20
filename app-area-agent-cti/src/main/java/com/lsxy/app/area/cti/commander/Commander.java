@@ -41,48 +41,47 @@ public class Commander {
 
 
     private static final Logger logger = LoggerFactory.getLogger(Commander.class);
-    static CommanderCallback callback = null;
-    static final Map<Integer, Client> clients = new ConcurrentHashMap<Integer, Client>();
-    private static final Map<String, ResponseListener> outgoingRpcMap = new ConcurrentHashMap<String, ResponseListener>();
-    private static final ScheduledThreadPoolExecutor outgoingRpcTimer = new ScheduledThreadPoolExecutor(Runtime.getRuntime().availableProcessors());
+    static final Map<Byte, Client> clients = new ConcurrentHashMap<>();
+    private static final Map<String, RpcResultListener> rpcResultListenerMap = new ConcurrentHashMap<>();
+    private static final ScheduledThreadPoolExecutor rpcResultListenerTimer = new ScheduledThreadPoolExecutor(Runtime.getRuntime().availableProcessors());
 
     static {
-        outgoingRpcTimer.setRemoveOnCancelPolicy(true);
+        rpcResultListenerTimer.setRemoveOnCancelPolicy(true);
     }
 
-    static void setOutgoingRpcReceiver(final ResponseListener receiver) {
-        logger.debug(">>> setOutgoingRpcReceiver(id={})", receiver.getId());
-        ScheduledFuture fut = outgoingRpcTimer.schedule(() -> {
-            logger.debug("OutgoingRpcReceiver(id={}) Timeout", receiver.getId());
+    static void pushRpcResultListener(final RpcResultListener rpcResultListener) {
+        logger.debug(">>> pushRpcResultListener(id={})", rpcResultListener.getId());
+        ScheduledFuture fut = rpcResultListenerTimer.schedule(() -> {
+            logger.debug("OutgoingRpcReceiver(id={}) Timeout", rpcResultListener.getId());
             try {
-                outgoingRpcMap.remove(receiver.getId());
-                receiver.onTimeout();
+                rpcResultListenerMap.remove(rpcResultListener.getId());
+                rpcResultListener.onTimeout();
             } catch (Exception e) {
-                logger.error(String.format("outgoingRpcTimer schedule error(id=%s)", receiver.getId()), e);
+                logger.error(String.format("rpcResultListenerTimer schedule error(id=%s)", rpcResultListener.getId()), e);
                 throw e;
             }
-        }, receiver.getTimeout(), TimeUnit.MILLISECONDS);
-        receiver.setFuture(fut);
-        outgoingRpcMap.put(receiver.getId(), receiver);
-        logger.debug("<<< setOutgoingRpcReceiver(id={})", receiver.getId());
+        }, rpcResultListener.getTimeout(), TimeUnit.MILLISECONDS);
+        rpcResultListener.setFuture(fut);
+        rpcResultListenerMap.put(rpcResultListener.getId(), rpcResultListener);
+        logger.debug("<<< pushRpcResultListener(id={})", rpcResultListener.getId());
     }
 
-    static ResponseListener delOutgoingRpcReceiver(String rpcId) {
-        ResponseListener receiver = outgoingRpcMap.remove(rpcId);
+    static RpcResultListener popRpcResultListener(String rpcId) {
+        RpcResultListener receiver = rpcResultListenerMap.remove(rpcId);
         if (receiver == null) return null;
         receiver.getFuture().cancel(false);
         return receiver;
     }
 
-    static ResponseListener delOutgoingRpcReceiver(ResponseListener receiver) {
-        return delOutgoingRpcReceiver(receiver.getId());
+    static RpcResultListener popRpcResultListener(RpcResultListener rpcResultListener) {
+        return popRpcResultListener(rpcResultListener.getId());
     }
 
-    static void outgoingRpcDone(Response response) {
-        logger.debug(">>> outgoingRpcDone(response={})", response);
-        ResponseListener receiver = delOutgoingRpcReceiver(response.getId());
+    static void rpcResponded(RpcResponse response) {
+        logger.debug(">>> rpcResponded(response={})", response);
+        RpcResultListener receiver = popRpcResultListener(response.getId());
         if (receiver == null) {
-            logger.warn("outgoingRpcDone(response={}) Not exists in OutgoingRpcReceiver map.", response);
+            logger.warn("rpcResponded(response={}) cannot be found in rpcResultListenerMap.", response);
             return;
         }
         if (response.getResult() != null) {
@@ -90,45 +89,47 @@ public class Commander {
         } else {
             receiver.onError(response.getError());
         }
-        logger.debug("<<< outgoingRpcDone(response={})", response);
+        logger.debug("<<< rpcResponded(response={})", response);
     }
 
     /**
      * 建立一个bus客户端链接
      *
-     * @param localClientId   本地clientid, >= 0 and <= 255
-     * @param localClientType 本地clienttype
-     * @param ip              BUS服务器IP地址
-     * @param port            BUS服务器端口
+     * @param localClientId     本地clientid, >= 0 and <= 255
+     * @param localClientType   本地clienttype
+     * @param ip                BUS服务器IP地址
+     * @param port              BUS服务器端口
+     * @param corePoolSize      该客户端内部 ThreadPoolExecutor 的 corePoolSize
+     * @param maximumPoolSize   该客户端内部 ThreadPoolExecutor 的 maximumPoolSize
+     * @param poolKeepAliveTime 该客户端内部 ThreadPoolExecutor 的 keepAliveTime
+     * @param poolKeepAliveUnit 该客户端内部 ThreadPoolExecutor 的 keepAliveUnit
+     * @param poolCapacity      该客户端内部 ThreadPoolExecutor ArrayBlockingQueue 的 capacity
      * @return 新建的客户端对象
      */
-    public static Client createClient(int localClientId, int localClientType, String ip, int port, int queueCapacity) throws InterruptedException {
+    public static Client createClient(byte localClientId, byte localClientType, String ip, short port, RpcEventListener eventListener,
+                                      int corePoolSize, int maximumPoolSize, long poolKeepAliveTime, TimeUnit poolKeepAliveUnit, int poolCapacity) throws InterruptedException {
         logger.debug(
-                ">>> createClient(localClientId={}, localClientType={}, ip={}, port={}, queueCapacity={})",
-                localClientId, localClientType, ip, port, queueCapacity
+                ">>> createClient(localClientId={}, localClientType={}, ip={}, port={}, corePoolSize={}, maximumPoolSize={}, poolKeepAliveTime={}, poolKeepAliveUnit={}, poolCapacity={})",
+                localClientId, localClientType, ip, port, corePoolSize, maximumPoolSize, poolKeepAliveTime, poolKeepAliveUnit, poolCapacity
         );
-        int errCode = com.lsxy.app.area.cti.busnetcli.Client.createConnect(
-                (byte) localClientId, (byte) localClientType, ip, (short) port, "", (short) 0xff, "", "", "");
-        if (errCode != 0) {
-            throw new RuntimeException(
-                    String.format("com.lsxy.app.area.cti.busnetcli.Client.createConnect returns %d", errCode));
-        }
-        Client client = new Client(unitId, (byte) localClientId, (byte) localClientType, ip, (short) port, queueCapacity);
+        Client client = new Client(unitId, localClientId, localClientType, ip, port, eventListener, corePoolSize, maximumPoolSize, poolKeepAliveTime, poolKeepAliveUnit, poolCapacity);
         clients.put(localClientId, client);
-        logger.debug("<<< createClient -> {}", client);
-        Thread.sleep(1000); //Pause for 1 seconds
         return client;
     }
 
-    /**
-     * 建立一个bus客户端链接
-     *
-     * @param localClientId   本地clientid, >= 0 and <= 255
-     * @param localClientType 本地clienttype
-     * @param ip              BUS服务器IP地址
-     * @return 新建的客户端对象
-     */
-    public static Client createClient(int localClientId, int localClientType, String ip) throws InterruptedException {
-        return createClient(localClientId, localClientType, ip, (short) 8088, 1024 * 4);
+    public static Client createClient(byte localClientId, byte localClientType, String ip, short port, RpcEventListener eventListener) throws InterruptedException {
+        int processors = Runtime.getRuntime().availableProcessors();
+        return createClient(
+                localClientId, localClientType, ip, port, eventListener,
+                1, processors, 1, TimeUnit.SECONDS, processors * 1000
+        );
+    }
+
+    public static Client createClient(byte localClientId, String ip, short port, RpcEventListener eventListener) throws InterruptedException {
+        return createClient(localClientId, (byte) 10, ip, port, eventListener);
+    }
+
+    public static Client createClient(byte localClientId, String ip, RpcEventListener eventListener) throws InterruptedException {
+        return createClient(localClientId, ip, (short) 8088, eventListener);
     }
 }
