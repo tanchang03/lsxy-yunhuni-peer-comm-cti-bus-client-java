@@ -7,7 +7,6 @@
 package com.lsxy.app.area.cti.busnetcli;
 
 import java.io.UnsupportedEncodingException;
-import java.util.Arrays;
 
 /**
  * BUS 客户端

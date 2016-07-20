@@ -15,7 +15,10 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class Client {
+/**
+ * 连接到 CTI BUS 的一个客户端。使用 {@link Commander#createClient} 创建
+ */
+class Client {
     Client(byte unitId, byte id, byte type, String ip, short port, RpcEventListener eventListener,
            int corePoolSize, int maximumPoolSize, long poolKeepAliveTime, TimeUnit poolKeepAliveUnit, int poolCapacity) throws InterruptedException {
         this.logger = LoggerFactory.getLogger(String.format("%s(%d,%d)", Client.class.toString(), unitId, id));
@@ -51,22 +54,37 @@ public class Client {
     RpcEventListener eventListener;
     ThreadPoolExecutor dataExecutor;
 
+    /**
+     * @return 该客户端所连接的CTI服务器的BUS UNIT ID
+     */
     public byte getUnitId() {
         return unitId;
     }
 
+    /**
+     * @return 该客户端所在其接的CTI服务器的BUS客户端ID(不同的 Unit 下, Client ID 可以重复)
+     */
     public byte getId() {
         return id;
     }
 
+    /**
+     * @return 该客户端所在其接的CTI服务器的BUS客户端类型标志
+     */
     public byte getType() {
         return type;
     }
 
+    /**
+     * @return 该客户端所在其接的CTI服务器的IP地址
+     */
     public String getIp() {
         return ip;
     }
 
+    /**
+     * @return 该客户端所在其接的CTI服务器的端口
+     */
     public short getPort() {
         return port;
     }
@@ -80,7 +98,7 @@ public class Client {
      * @param params            新建资源的参数
      * @param rpcResultListener 调用返回结果监听器
      * @return 此次调用的 RPC ID
-     * @throws IOException
+     * @throws IOException JSON解码错误
      */
     public String createResource(int dstUnitId, int dstIpscIndex,
                                  String name, Map<String, Object> params,
@@ -143,7 +161,7 @@ public class Client {
      * @param params            操作方法的参数
      * @param rpcResultListener 调用返回结果监听器
      * @return 此次调用的 RPC ID
-     * @throws IOException
+     * @throws IOException JSON解码错误
      */
     public String operateResource(int dstUnitId, int dstIpscIndex,
                                   String id, String method, Map<String, Object> params,

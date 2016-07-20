@@ -1,8 +1,11 @@
 package com.lsxy.app.area.cti.commander;
 
 /**
+ * RPC 错误。由 CTI 服务器返回
+ *
  * Created by liuxy on 16-7-13.
  */
+
 public class RpcError {
     private int code;
     private String message = null;
@@ -13,6 +16,9 @@ public class RpcError {
         return String.format("<%s code=%d, message=%s, data=%s>", RpcError.class, getCode(), getMessage(), getData());
     }
 
+    /**
+     * @return 错误编码
+     */
     public int getCode() {
         return code;
     }
@@ -21,6 +27,9 @@ public class RpcError {
         this.code = code;
     }
 
+    /**
+     * @return 错误描述信息
+     */
     public String getMessage() {
         return message;
     }
@@ -29,6 +38,9 @@ public class RpcError {
         this.message = message;
     }
 
+    /**
+     * @return 错误数据
+     */
     public Object getData() {
         return data;
     }

@@ -1,6 +1,8 @@
 package com.lsxy.app.area.cti.commander;
 
 /**
+ * RPC 回复。CTI服务使用这个格式响应java应用服务的RPC调用
+ *
  * Created by liuxy on 16-7-13.
  */
 public class RpcResponse {
@@ -16,7 +18,9 @@ public class RpcResponse {
             return String.format("<%s id=%s, result=%s>", RpcResponse.class, this.id, this.result);
     }
 
-
+    /**
+     * @return 对应的 RPC ID
+     */
     public String getId() {
         return id;
     }
@@ -25,6 +29,9 @@ public class RpcResponse {
         this.id = id;
     }
 
+    /**
+     * @return RPC 返回值。如果出错，返回值必须为 null
+     */
     public Object getResult() {
         return result;
     }
@@ -33,6 +40,9 @@ public class RpcResponse {
         this.result = result;
     }
 
+    /**
+     * @return RPC 错误信息。如果该属性不是null，表明RPC执行出错。
+     */
     public RpcError getError() {
         return error;
     }
