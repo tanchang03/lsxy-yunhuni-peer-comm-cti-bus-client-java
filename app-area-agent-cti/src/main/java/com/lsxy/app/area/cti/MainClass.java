@@ -3,7 +3,6 @@ package com.lsxy.app.area.cti;
 import java.io.IOException;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Objects;
 import java.util.Scanner;
 
 import com.lsxy.app.area.cti.commander.*;
@@ -18,14 +17,11 @@ public class MainClass {
 
     public static void main(String[] args) throws Exception {
         logger.debug("initiate...");
-        Commander.initiate(20);
+        Commander.initiate((byte) 20);
         logger.debug("initiate OK!");
-        Client client = Commander.createClient((byte) 0, "192.168.2.100", new RpcEventListener() {
-            @Override
-            public void onEvent(RpcRequest request) {
-                logger.debug("收到事件：{}", request);
-            }
-        });
+        Client client = Commander.createClient((byte) 0, "192.168.2.100",
+                request -> logger.debug("收到事件：{}", request)
+        );
         for (int i = 0; i < 1; ++i) {
             Map<String, Object> params = new HashMap<>();
             params.put("from_uri", "");

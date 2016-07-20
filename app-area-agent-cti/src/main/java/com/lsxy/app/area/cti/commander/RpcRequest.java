@@ -4,7 +4,7 @@ import java.util.Map;
 
 /**
  * RPC 请求。JAVA应用服务发送的RPC请求，CTI服务发送的RPC事件通知，使用这个类型
- *
+ * <p>
  * Created by liuxy on 16-7-13.
  */
 public class RpcRequest {

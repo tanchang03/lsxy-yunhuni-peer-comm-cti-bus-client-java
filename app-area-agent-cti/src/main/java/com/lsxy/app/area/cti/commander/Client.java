@@ -18,7 +18,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 /**
  * 连接到 CTI BUS 的一个客户端。使用 {@link Commander#createClient} 创建
  */
-class Client {
+public class Client {
     Client(byte unitId, byte id, byte type, String ip, short port, RpcEventListener eventListener,
            int corePoolSize, int maximumPoolSize, long poolKeepAliveTime, TimeUnit poolKeepAliveUnit, int poolCapacity) throws InterruptedException {
         this.logger = LoggerFactory.getLogger(String.format("%s(%d,%d)", Client.class.toString(), unitId, id));

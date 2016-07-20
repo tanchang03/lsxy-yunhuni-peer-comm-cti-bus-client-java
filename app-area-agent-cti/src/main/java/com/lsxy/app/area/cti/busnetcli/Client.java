@@ -16,7 +16,7 @@ public class Client {
     /**
      * 初始化
      *
-     * @param unitId 客户端ID。unitId >= 16
+     * @param unitId 客户端ID。客户端的 unitId 必须大于等于 16
      * @return 返回码
      */
     public native static int initiateLibrary(byte unitId);
@@ -29,8 +29,8 @@ public class Client {
     /**
      * 创建连接
      *
-     * @param localClientId   本地clientid, >= 0 and <= 255
-     * @param localClientType 本地clienttype
+     * @param localClientId   本地clientid
+     * @param localClientType 本地clienttype，要大于8
      * @param masterIp        目标主IP地址
      * @param masterPort      目标主端口
      * @param slaverIp        目标从IP地址。没有从地址的，填写0，或者""
@@ -55,7 +55,7 @@ public class Client {
      * @param timeout       有流程返回时的等待超时值。单位ms
      * @param valueList     整型、浮点型、字符串及其组合的 object, array
      *                      JSON数组（子流程开始节点的传人参数自动变换为输入参数列表数据。）（对应的字符串内容最大长度不超过16K字节）
-     * @return > 0 invoke_id，调用ID，用于流程结果返回匹配用途。< 0 表示错误。
+     * @return 大于等于0表示invoke_id（调用ID）用于流程结果返回匹配用途。小于0表示错误。
      */
     public native static int launchFlow(byte localClientId, int serverUnitId, int ipscIndex, String projectId,
                                         String flowId, int mode, int timeout, String valueList);
@@ -71,7 +71,7 @@ public class Client {
      * @param mode          调用模式。目前无意义，一律使用0
      * @param expires       消息有效期。单位ms
      * @param param         消息数据
-     * @return 返回值：> 0 invoke_id，调用ID。< 0 表示错误。
+     * @return 返回值：大于等于0表示invoke_id（调用ID）。小于0表示错误。
      */
     public native static int sendNotification(byte localClientId, int serverUnitId, int ipscIndex, String projectId,
                                               String title, int mode, int expires, String param);
@@ -86,7 +86,7 @@ public class Client {
      * @param dstClientId   The destination clientid
      * @param dstClientType The destination clienttype
      * @param data          The data
-     * @return 0 表示成功、 < 0 表示错误。
+     * @return 0表示成功，小于0表示错误。
      */
     public native static int sendData(byte localClientId, byte cmd, byte cmdType, int dstUnitId, int dstClientId,
                                       int dstClientType, byte[] data);

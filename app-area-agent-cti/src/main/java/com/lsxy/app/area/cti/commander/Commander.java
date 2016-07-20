@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 /**
  * 命令处理器
  * <p>
- * 命令处理器实际上是对 CTI BUS JNI 客户端的一次在封装，以适应云呼你项目中关于CTI服务调用的规定。
+ * 命令处理器实际上是对 CTI BUS JNI 客户端的一次再封装，以适应云呼你项目中关于CTI服务调用的规定。
  * <p>
  * 一个进程只用使用一个 {@link Commander}
  */
@@ -115,7 +115,7 @@ public class Commander {
     /**
      * 建立一个bus客户端链接
      *
-     * @param localClientId     本地clientid, >= 0 and <= 255
+     * @param localClientId     本地clientid
      * @param localClientType   本地clienttype 要大于 8
      * @param ip                BUS服务器IP地址
      * @param port              BUS服务器端口
@@ -145,7 +145,7 @@ public class Commander {
      * <p>
      * 新建的 {@link Client} 对象的线程池执行器的 corePoolSize是1，maximumPoolSize是处理器核心数，keepAliveTime是1分钟，capacity是处理器核心数乘以1000。
      *
-     * @param localClientId   本地clientid, >= 0 and <= 255
+     * @param localClientId   本地clientid
      * @param localClientType 本地clienttype 要大于 8
      * @param ip              BUS服务器IP地址
      * @param port            BUS服务器端口
@@ -167,7 +167,7 @@ public class Commander {
      * 新建的 {@link Client} 对象的线程池执行器的 corePoolSize是1，maximumPoolSize是处理器核心数，keepAliveTime是1分钟，capacity是处理器核心数乘以1000.
      * 其客户端BUS类型是10。
      *
-     * @param localClientId 本地clientid, >= 0 and <= 255
+     * @param localClientId 本地clientid
      * @param ip            BUS服务器IP地址
      * @param port          BUS服务器端口
      * @param eventListener 该客户端的事件监听器
@@ -184,7 +184,7 @@ public class Commander {
      * 新建的 {@link Client} 对象的线程池执行器的 corePoolSize是1，maximumPoolSize是处理器核心数，keepAliveTime是1分钟，capacity是处理器核心数乘以1000.
      * 其客户端BUS类型是10。连接的端口是 8088。
      *
-     * @param localClientId 本地clientid, >= 0 and <= 255
+     * @param localClientId 本地clientid
      * @param ip            BUS服务器IP地址
      * @param eventListener 该客户端的事件监听器
      * @return 新建的客户端对象

@@ -2,7 +2,7 @@ package com.lsxy.app.area.cti.commander;
 
 /**
  * RPC 回复。CTI服务使用这个格式响应java应用服务的RPC调用
- *
+ * <p>
  * Created by liuxy on 16-7-13.
  */
 public class RpcResponse {
