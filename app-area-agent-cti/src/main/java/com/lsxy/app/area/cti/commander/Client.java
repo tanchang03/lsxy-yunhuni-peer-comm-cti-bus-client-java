@@ -171,8 +171,9 @@ public class Client {
                 dstUnitId, dstIpscIndex, id, method, params, rpcResultListener
         );
         // name = IPSC 项目ID.流程ID
-        String[] nameParts = method.split(Pattern.quote("."), 2);
+        String[] nameParts = method.split(Pattern.quote("."), 1);
         String projectId = nameParts[0];
+        String methodName = nameParts[1];
         // 调用流程， IPSC 流程中照这个 ID 进行 RPC 返回
         String rpcId = UUID.randomUUID().toString();
         // 构建 JSON 数据结构格式： [[unit_id, client_id], rpc_id, method, params]
@@ -182,7 +183,7 @@ public class Client {
         item0[1] = (int) this.id;
         obj[0] = item0;
         obj[1] = rpcId;
-        obj[2] = method;
+        obj[2] = methodName;
         obj[3] = params;
         // 序列化！
         ObjectMapper mapper = new ObjectMapper();
