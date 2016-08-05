@@ -131,7 +131,7 @@ public class Client {
                 dstUnitId, dstIpscIndex, name, params, rpcResultListener
         );
         // name = IPSC 项目ID.流程ID
-        String[] nameParts = name.split(Pattern.quote("."), 2);
+        String[] nameParts = name.split(Pattern.quote("."), 1);
         String projectId = nameParts[0];
         String flowId = nameParts[1];
         // 调用流程， IPSC 流程中照这个 ID 进行 RPC 返回
@@ -193,7 +193,7 @@ public class Client {
                 ">>> operateResource(dstUnitId={}, dstIpscIndex={}, id={}, method={}, params={}, rpcResultListener={})",
                 dstUnitId, dstIpscIndex, id, method, params, rpcResultListener
         );
-        // name = IPSC 项目ID.流程ID
+        // name = IPSC 项目ID.流程ID.方法名
         String[] nameParts = method.split(Pattern.quote("."), 1);
         String projectId = nameParts[0];
         String methodName = nameParts[1];
