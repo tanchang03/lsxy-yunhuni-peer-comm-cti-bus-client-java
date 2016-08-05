@@ -22,7 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class Client {
     Client(byte unitId, byte id, byte type, String ip, short port, RpcEventListener eventListener, ThreadPoolExecutor executor) throws InterruptedException {
-        this.logger = LoggerFactory.getLogger(String.format("%s(%d,%d)", Client.class.toString(), unitId, id));
+        this.logger = LoggerFactory.getLogger(Client.class);
         this.unitId = unitId;
         this.connectingUnitId = -1;
         this.connected = false;
