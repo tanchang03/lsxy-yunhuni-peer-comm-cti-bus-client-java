@@ -14,21 +14,22 @@ import org.slf4j.LoggerFactory;
  * <p>
  * 命令处理器实际上是对 CTI BUS JNI 客户端的一次再封装，以适应云呼你项目中关于CTI服务调用的规定。
  * <p>
- * 一个进程只用使用一个 {@link Commander}
+ * 一个进程只用使用一个 {@link Unit}
  */
-public class Commander {
+public class Unit {
     /**
      * 初始化 JNI 库
      * <p>
-     * 在使用 {@link Commander} 的其它功能之前，必须使用 {@link Commander#initiate} 进行初始化。
+     * 在使用 {@link Unit} 的其它功能之前，必须使用该静态方法进行初始化。
      * 该方法只能执行一次。
      *
-     * @param localUnitId 该进程在CTI BUS 中的单元ID(Unit Id)
+     * @param localUnitId 该单元在 CTI BUS 中的单元ID(Unit Id)
+     * @param callbacks   单元级别的事件回调函数
      */
-    public static void initiate(byte localUnitId) {
-        logger.info(">>> initiate(localUnitId={})", localUnitId);
-        unitId = localUnitId;
-        int errCode = com.lsxy.app.area.cti.busnetcli.Client.initiateLibrary(unitId);
+    public static void initiate(byte localUnitId, UnitCallbacks callbacks) {
+        logger.info(">>> initiate(localUnitId={}, callbacks={})", localUnitId, callbacks);
+        Unit.localUnitId = localUnitId;
+        int errCode = com.lsxy.app.area.cti.busnetcli.Client.initiateLibrary(Unit.localUnitId);
         if (errCode != 0) {
             throw new RuntimeException(
                     String.format(
@@ -37,8 +38,21 @@ public class Commander {
                     )
             );
         }
+        Unit.callbacks = callbacks;
         com.lsxy.app.area.cti.busnetcli.Client.setCallbacks(new LibCallbackHandler());
         logger.info("<<< initiate()");
+    }
+
+    /**
+     * 初始化 JNI 库
+     * <p>
+     * 在使用 {@link Unit} 的其它功能之前，必须使用该静态方法进行初始化。
+     * 该方法只能执行一次。
+     *
+     * @param localUnitId 该单元在 CTI BUS 中的单元ID(Unit Id)
+     */
+    public static void initiate(byte localUnitId) {
+        initiate(localUnitId, null);
     }
 
     /**
@@ -50,17 +64,18 @@ public class Commander {
         logger.warn("<<< release()");
     }
 
-    private static Byte unitId;
+    static Byte localUnitId;
+    static UnitCallbacks callbacks;
 
     /**
      * @return 该命令处理器的 CTI BUS 单元ID (Unit Id)
      */
-    public static Byte getUnitId() {
-        return unitId;
+    public static Byte getLocalUnitId() {
+        return localUnitId;
     }
 
 
-    private static final Logger logger = LoggerFactory.getLogger(Commander.class);
+    private static final Logger logger = LoggerFactory.getLogger(Unit.class);
     static final Map<Byte, Client> clients = new ConcurrentHashMap<>();
     private static final Map<String, RpcResultListener> rpcResultListenerMap = new ConcurrentHashMap<>();
     private static final ScheduledThreadPoolExecutor rpcResultListenerTimer = new ScheduledThreadPoolExecutor(Runtime.getRuntime().availableProcessors());
@@ -134,7 +149,7 @@ public class Commander {
                 ">>> createClient(localClientId={}, localClientType={}, ip={}, port={}, corePoolSize={}, maximumPoolSize={}, poolKeepAliveTime={}, poolKeepAliveUnit={}, poolCapacity={})",
                 localClientId, localClientType, ip, port, corePoolSize, maximumPoolSize, poolKeepAliveTime, poolKeepAliveUnit, poolCapacity
         );
-        Client client = new Client(unitId, localClientId, localClientType, ip, port, eventListener, corePoolSize, maximumPoolSize, poolKeepAliveTime, poolKeepAliveUnit, poolCapacity);
+        Client client = new Client(localUnitId, localClientId, localClientType, ip, port, eventListener, corePoolSize, maximumPoolSize, poolKeepAliveTime, poolKeepAliveUnit, poolCapacity);
         clients.put(localClientId, client);
         logger.info("<<< createClient() -> {}", client);
         return client;

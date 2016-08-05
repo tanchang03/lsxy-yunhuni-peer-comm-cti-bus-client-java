@@ -16,13 +16,19 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * 连接到 CTI BUS 的一个客户端。使用 {@link Commander#createClient} 创建
+ * CTI BUS 客户端
+ * <p>
+ * 客户端是从属于 {@link Unit} 的
+ *
+ * @apiNote 使用 {@link Unit#createClient} 创建客户端，<strong>不要</strong>使用构造函数。
  */
 public class Client {
     Client(byte unitId, byte id, byte type, String ip, short port, RpcEventListener eventListener,
            int corePoolSize, int maximumPoolSize, long poolKeepAliveTime, TimeUnit poolKeepAliveUnit, int poolCapacity) throws InterruptedException {
         this.logger = LoggerFactory.getLogger(String.format("%s(%d,%d)", Client.class.toString(), unitId, id));
         this.unitId = unitId;
+        this.connectingUnitId = -1;
+        this.connected = false;
         this.id = id;
         this.type = type;
         this.ip = ip;
@@ -47,6 +53,8 @@ public class Client {
 
     Logger logger;
     private byte unitId;
+    byte connectingUnitId;
+    boolean connected;
     private byte id;
     private byte type;
     private String ip;
@@ -55,10 +63,26 @@ public class Client {
     ThreadPoolExecutor dataExecutor;
 
     /**
-     * @return 该客户端所连接的CTI服务器的BUS UNIT ID
+     * @return 该客户端所述的本地 BUS UNIT 的 ID，即 {@link Unit#getLocalUnitId} 属性
      */
     public byte getUnitId() {
         return unitId;
+    }
+
+    /**
+     * @return 是否连接到了 CTI BUS 服务器。
+     */
+    public boolean getConnected() {
+        return connected;
+    }
+
+    /**
+     * @return 该客户端所连接的CTI服务器的 BUS UNIT ID
+     * <br\>
+     * <code>-1</code> 表示未曾连接到服务器。
+     */
+    public byte getConnectingUnitId() {
+        return connectingUnitId;
     }
 
     /**
@@ -129,7 +153,7 @@ public class Client {
         // 接收器进入等待队列
         if (rpcResultListener != null) {
             rpcResultListener.setId(rpcId);
-            Commander.pushRpcResultListener(rpcResultListener);
+            Unit.pushRpcResultListener(rpcResultListener);
         }
         // 调用 JNI：启动 IPSC 流程
         this.logger.debug(
@@ -143,7 +167,7 @@ public class Client {
         if (fiId < 0) {
             // 出错了，撤销接收器于等待队列
             if (rpcResultListener != null)
-                Commander.popRpcResultListener(rpcResultListener);
+                Unit.popRpcResultListener(rpcResultListener);
             throw new RuntimeException(String.format("com.lsxy.app.area.cti.busnetcli.Client.launchFlow() returns %d", fiId));
         }
         //返回 RPC ID
@@ -193,7 +217,7 @@ public class Client {
         // 接收器进入等待队列
         if (rpcResultListener != null) {
             rpcResultListener.setId(rpcId);
-            Commander.pushRpcResultListener(rpcResultListener);
+            Unit.pushRpcResultListener(rpcResultListener);
         }
         // 调用 JNI：向 IPSC 流程发送订阅通知
         this.logger.debug(
@@ -206,7 +230,7 @@ public class Client {
         this.logger.debug("operateResource: <<< sendNotification() -> {}", ivkId);
         if (ivkId < 0) {
             // 出错了，撤销接收器于等待队列
-            Commander.popRpcResultListener(rpcResultListener);
+            Unit.popRpcResultListener(rpcResultListener);
             throw new RuntimeException(String.format("com.lsxy.app.area.cti.busnetcli.Client.sendNotification() returns %d", ivkId));
         }
         //返回 RPC ID

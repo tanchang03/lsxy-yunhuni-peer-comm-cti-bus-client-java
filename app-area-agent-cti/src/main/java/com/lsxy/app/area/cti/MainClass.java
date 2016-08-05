@@ -17,9 +17,9 @@ public class MainClass {
 
     public static void main(String[] args) throws Exception {
         logger.debug("initiate...");
-        Commander.initiate((byte) 20);
+        Unit.initiate((byte) 20);
         logger.debug("initiate OK!");
-        Client client = Commander.createClient((byte) 0, "192.168.2.100",
+        Client client = Unit.createClient((byte) 0, "192.168.2.100",
                 request -> logger.debug("收到事件：{}", request)
         );
         for (int i = 0; i < 1; ++i) {

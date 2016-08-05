@@ -14,27 +14,50 @@ class LibCallbackHandler implements com.lsxy.app.area.cti.busnetcli.Callbacks {
     private final Logger jniLogger = LoggerFactory.getLogger("bus_net_cli");
 
     public void globalConnect(byte unitId, byte clientId, byte clientType, byte status, String addInfo) {
-        logger.info("Bus global connection event: unitId={}, clientId={}, clientType={}, addInfo={}, status={}", unitId, clientId, clientType, addInfo, status);
+        logger.info("Bus global connection event: localUnitId={}, clientId={}, clientType={}, addInfo={}, status={}", unitId, clientId, clientType, addInfo, status);
+        if (Unit.callbacks != null) {
+            Unit.callbacks.globalConnectStateChanged(unitId, clientId, clientType, status, addInfo);
+        }
     }
 
     public void connect(byte localClientId, int accessPointUnitId, int errorCode) {
-        if (errorCode == 0) {
+        if (errorCode == 0)
             // 客户端链接成功
-            logger.info("[{}:{}] connection succeed. AccessPointUnitId={}", Commander.getUnitId(), localClientId, accessPointUnitId);
-        } else {
+            logger.info("[{}:{}] connection succeed. ConnectingUnitId={}", Unit.getLocalUnitId(), localClientId, accessPointUnitId);
+        else
             // 客户端链接失败
-            logger.error("[{}:{}] connection failed. ErrorCode={}", Commander.getUnitId(), localClientId, errorCode);
+            logger.error("[{}:{}] connection failed. ErrorCode={}", Unit.getLocalUnitId(), localClientId, errorCode);
+        Client client = Unit.clients.get(localClientId);
+        if (client != null) {
+            client.connected = errorCode == 0;
+            if (client.connected) {
+                client.connectingUnitId = (byte) accessPointUnitId;
+                if (Unit.callbacks != null) {
+                    Unit.callbacks.connectSucceed(client);
+                }
+            } else {
+                if (Unit.callbacks != null) {
+                    Unit.callbacks.connectFailed(client, errorCode);
+                }
+            }
         }
     }
 
     public void disconnect(byte localClientId) {
-        logger.error("[{}:{}] connection lost", Commander.getUnitId(), localClientId);
+        logger.error("[{}:{}] connection lost", Unit.getLocalUnitId(), localClientId);
+        Client client = Unit.clients.get(localClientId);
+        if (client != null) {
+            client.connected = false;
+            if (Unit.callbacks != null) {
+                Unit.callbacks.connectLost(client);
+            }
+        }
     }
 
     public void data(Head head, byte[] bytes) {
         logger.debug(">>> data(head={}. dataLength={})", head, bytes.length);
         byte clientId = head.getDstClientId();
-        Client client = Commander.clients.get(clientId);
+        Client client = Unit.clients.get(clientId);
         if (client == null) {
             logger.error("cannot find client<id={}>", clientId);
             return;
@@ -66,7 +89,7 @@ class LibCallbackHandler implements com.lsxy.app.area.cti.busnetcli.Callbacks {
                 } catch (JsonProcessingException ignore) {
                 }
                 if (res != null) {
-                    Commander.rpcResponded(res);
+                    Unit.rpcResponded(res);
                     return;
                 }
                 // 既不是RPC事件通知，也不是RPC请求回复，只能忽略了。
