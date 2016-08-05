@@ -5,9 +5,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.UUID;
 import java.util.Map;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
@@ -23,8 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * 使用 {@link Unit#createClient} 创建客户端，<strong>不要</strong>使用构造函数。
  */
 public class Client {
-    Client(byte unitId, byte id, byte type, String ip, short port, RpcEventListener eventListener,
-           int corePoolSize, int maximumPoolSize, long poolKeepAliveTime, TimeUnit poolKeepAliveUnit, int poolCapacity) throws InterruptedException {
+    Client(byte unitId, byte id, byte type, String ip, short port, RpcEventListener eventListener, ThreadPoolExecutor executor) throws InterruptedException {
         this.logger = LoggerFactory.getLogger(String.format("%s(%d,%d)", Client.class.toString(), unitId, id));
         this.unitId = unitId;
         this.connectingUnitId = -1;
@@ -34,12 +31,8 @@ public class Client {
         this.ip = ip;
         this.port = port;
         this.eventListener = eventListener;
-        this.dataExecutor = new ThreadPoolExecutor(
-                corePoolSize, maximumPoolSize,
-                poolKeepAliveTime, poolKeepAliveUnit,
-                new ArrayBlockingQueue<>(poolCapacity, true)
-        );
-        this.dataExecutor.prestartAllCoreThreads();
+        this.executor = executor;
+        this.executor.prestartAllCoreThreads();
         int errCode = com.lsxy.app.area.cti.busnetcli.Client.createConnect(
                 id, type, ip, port, "", (short) 0xff, "", "", ""
         );
@@ -60,7 +53,7 @@ public class Client {
     private String ip;
     private short port;
     RpcEventListener eventListener;
-    ThreadPoolExecutor dataExecutor;
+    ThreadPoolExecutor executor;
 
     /**
      * @return 该客户端所述的本地 BUS UNIT 的 ID，即 {@link Unit#getLocalUnitId} 属性
@@ -116,9 +109,15 @@ public class Client {
     /**
      * 在指定的CTI服务(IPSC)节点上新建一个 CTI 资源
      *
-     * @param dstUnitId         目标 IPSC 的 BUS Unit ID
+     * @param dstUnitId         目标 IPSC 所在的 BUS Unit ID
      * @param dstIpscIndex      目标 IPSC 的 进程编号
-     * @param name              要新建的资源。目前支持的资源有 呼叫 - sys.call, 会议 - sys.conf
+     * @param name              要新建的资源的名称。
+     *                          <br>
+     *                          目前支持的资源有:
+     *                          <ul>
+     *                          <li>呼叫 - {@code "sys.call"}</li>
+     *                          <li>会议 - {@code "sys.conf"}</li>
+     *                          </ul>
      * @param params            新建资源的参数
      * @param rpcResultListener 调用返回结果监听器
      * @return 此次调用的 RPC ID

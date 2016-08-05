@@ -62,7 +62,7 @@ class LibCallbackHandler implements com.lsxy.app.area.cti.busnetcli.Callbacks {
             logger.error("cannot find client<id={}>", clientId);
             return;
         }
-        client.dataExecutor.execute(() -> {
+        client.executor.execute(() -> {
             try {
                 String rpcTxt = new String(bytes, "UTF-8");
                 RpcRequest req = null;
@@ -95,7 +95,7 @@ class LibCallbackHandler implements com.lsxy.app.area.cti.busnetcli.Callbacks {
                 // 既不是RPC事件通知，也不是RPC请求回复，只能忽略了。
                 client.logger.warn("unsupported RPC content received: {}", rpcTxt);
             } catch (Exception e) {
-                client.logger.error("error occurred in dataExecutor.execute()", e);
+                client.logger.error("error occurred in executor.execute()", e);
             }
         });
         logger.debug("<<< data()");
