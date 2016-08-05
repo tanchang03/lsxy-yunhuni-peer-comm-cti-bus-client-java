@@ -22,7 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class Client {
     Client(byte unitId, byte id, byte type, String ip, short port, RpcEventListener eventListener, ThreadPoolExecutor executor) throws InterruptedException {
-        this.logger = LoggerFactory.getLogger(String.format("%s(%d,%d)", Client.class.toString(), unitId, id));
+        this.logger = LoggerFactory.getLogger(Client.class);
         this.unitId = unitId;
         this.connectingUnitId = -1;
         this.connected = false;
@@ -193,8 +193,8 @@ public class Client {
                 ">>> operateResource(dstUnitId={}, dstIpscIndex={}, id={}, method={}, params={}, rpcResultListener={})",
                 dstUnitId, dstIpscIndex, id, method, params, rpcResultListener
         );
-        // name = IPSC 项目ID.流程ID
-        String[] nameParts = method.split(Pattern.quote("."), 1);
+        // name = IPSC 项目ID.流程ID.方法名
+        String[] nameParts = method.split(Pattern.quote("."), 3);
         String projectId = nameParts[0];
         String methodName = nameParts[1];
         // 调用流程， IPSC 流程中照这个 ID 进行 RPC 返回
