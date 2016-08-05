@@ -19,8 +19,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * CTI BUS 客户端
  * <p>
  * 客户端是从属于 {@link Unit} 的
- *
- * @apiNote 使用 {@link Unit#createClient} 创建客户端，<strong>不要</strong>使用构造函数。
+ * <p>
+ * 使用 {@link Unit#createClient} 创建客户端，<strong>不要</strong>使用构造函数。
  */
 public class Client {
     Client(byte unitId, byte id, byte type, String ip, short port, RpcEventListener eventListener,
@@ -78,7 +78,7 @@ public class Client {
 
     /**
      * @return 该客户端所连接的CTI服务器的 BUS UNIT ID
-     * <br\>
+     * <br>
      * <code>-1</code> 表示未曾连接到服务器。
      */
     public byte getConnectingUnitId() {

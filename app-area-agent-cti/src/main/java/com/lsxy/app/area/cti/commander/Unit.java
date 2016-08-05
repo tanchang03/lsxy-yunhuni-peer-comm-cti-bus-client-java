@@ -10,9 +10,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 命令处理器
+ * CTI BUS 单元
  * <p>
- * 命令处理器实际上是对 CTI BUS JNI 客户端的一次再封装，以适应云呼你项目中关于CTI服务调用的规定。
+ * 它实际上是对 CTI BUS JNI 客户端共享库的一次再封装，以适应云呼你项目中关于CTI服务调用的规定。
  * <p>
  * 一个进程只用使用一个 {@link Unit}
  */
