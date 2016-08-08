@@ -206,7 +206,7 @@ public class Client {
         item0[1] = (int) this.id;
         obj[0] = item0;
         obj[1] = rpcId;
-        obj[2] = methodName;
+        obj[2] = method;
         obj[3] = params;
         // 序列化！
         ObjectMapper mapper = new ObjectMapper();
