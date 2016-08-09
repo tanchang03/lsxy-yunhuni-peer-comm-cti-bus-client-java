@@ -10,16 +10,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * A very simple sample program shows how to use the package.
+ * <p>
  * Created by liuxy on 16-7-13.
  */
 public class MainClass {
-    static final Logger logger = LoggerFactory.getLogger(MainClass.class);
+    private static final Logger logger = LoggerFactory.getLogger(MainClass.class);
 
     public static void main(String[] args) throws Exception {
         logger.debug("initiate...");
         Unit.initiate((byte) 20);
         logger.debug("initiate OK!");
-        Client client = Unit.createClient((byte) 0, "192.168.2.100",
+        Client client = Unit.createClient(
+                (byte) 0,
+                "192.168.2.100",
                 (source, request) -> logger.debug("收到事件：source={}, request={}", source, request)
         );
 
@@ -43,7 +47,8 @@ public class MainClass {
                             try {
                                 client.operateResource(
                                         new BusAddress((byte) 0, (byte) 0),
-                                        callId, "sys.call.drop",
+                                        callId,
+                                        "sys.call.drop",
                                         params,
                                         new RpcResultListener() {
                                             @Override
