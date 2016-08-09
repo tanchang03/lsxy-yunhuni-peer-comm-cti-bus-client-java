@@ -8,7 +8,7 @@ import com.lsxy.app.area.cti.busnetcli.Head;
  * Created by tanbr on 2016/8/9.
  */
 public class BusAddress {
-    BusAddress(byte unitId, byte clientId) {
+    public BusAddress(byte unitId, byte clientId) {
         this.unitId = unitId;
         this.clientId = clientId;
     }

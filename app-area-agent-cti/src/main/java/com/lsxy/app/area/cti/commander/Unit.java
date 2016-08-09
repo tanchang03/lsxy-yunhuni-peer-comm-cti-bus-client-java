@@ -143,20 +143,19 @@ public class Unit {
     /**
      * 建立一个bus客户端链接
      *
-     * @param localClientId   本地clientid
-     * @param localClientType 本地clienttype 要大于 8
-     * @param ip              BUS服务器IP地址
-     * @param port            BUS服务器端口
-     * @param eventListener   该客户端的事件监听器
-     * @param executor        该客户端内部的ThreadPoolExecutor，用于处理异步的消息返回
+     * @param localClientId 本地clientid
+     * @param ip            BUS服务器IP地址
+     * @param port          BUS服务器端口
+     * @param eventListener 该客户端的事件监听器
+     * @param executor      该客户端内部的ThreadPoolExecutor，用于处理异步的消息返回。如果为 {@code null} 就收不到事件。
      * @return 新建的客户端对象
      * @throws InterruptedException 程序结束?
      */
-    public static Client createClient(byte localClientId, byte localClientType, String ip, short port,
+    public static Client createClient(byte localClientId, String ip, short port,
                                       RpcEventListener eventListener, ThreadPoolExecutor executor) throws InterruptedException {
         logger.info(
-                ">>> createClient(localClientId={}, localClientType={}, ip={}, port={}, eventListener={}, executor={})",
-                localClientId, localClientType, ip, port, eventListener, executor
+                ">>> createClient(localClientId={}, ip={}, port={}, eventListener={}, executor={})",
+                localClientId, ip, port, eventListener, executor
         );
         if (executor == null) {
             int processors = Runtime.getRuntime().availableProcessors();
@@ -165,7 +164,7 @@ public class Unit {
                     new ArrayBlockingQueue<>(processors * 1000, true)
             );
         }
-        Client client = new Client(localUnitId, localClientId, localClientType, ip, port, eventListener, executor);
+        Client client = new Client(localUnitId, localClientId, ip, port, eventListener, executor);
         clients.put(localClientId, client);
         logger.info("<<< createClient() -> {}", client);
         return client;
@@ -174,30 +173,15 @@ public class Unit {
     /**
      * 建立一个bus客户端链接
      *
-     * @param localClientId   本地clientid
-     * @param localClientType 本地clienttype 要大于 8
-     * @param ip              BUS服务器IP地址
-     * @param port            BUS服务器端口
-     * @param eventListener   该客户端的事件监听器
-     * @return 新建的客户端对象
-     * @throws InterruptedException 程序结束?
-     */
-    public static Client createClient(byte localClientId, byte localClientType, String ip, short port, RpcEventListener eventListener) throws InterruptedException {
-        return createClient(localClientId, localClientType, ip, port, eventListener, null);
-    }
-
-    /**
-     * 建立一个bus客户端链接
-     *
-     * @param localClientId 本地clientid
+     * @param localClientId 本地 Client Id
      * @param ip            BUS服务器IP地址
      * @param port          BUS服务器端口
-     * @param eventListener 该客户端的事件监听器
+     * @param eventListener 该客户端的事件监听器。如果为 {@code null} 就收不到事件。
      * @return 新建的客户端对象
      * @throws InterruptedException 程序结束?
      */
     public static Client createClient(byte localClientId, String ip, short port, RpcEventListener eventListener) throws InterruptedException {
-        return createClient(localClientId, (byte) 10, ip, port, eventListener);
+        return createClient(localClientId, ip, port, eventListener, null);
     }
 
     /**
@@ -212,7 +196,7 @@ public class Unit {
      *
      * @param localClientId 本地clientid
      * @param ip            BUS服务器IP地址
-     * @param eventListener 该客户端的事件监听器
+     * @param eventListener 该客户端的事件监听器。如果为 {@code null} 就收不到事件。
      * @return 新建的客户端对象
      * @throws InterruptedException 程序结束?
      */
