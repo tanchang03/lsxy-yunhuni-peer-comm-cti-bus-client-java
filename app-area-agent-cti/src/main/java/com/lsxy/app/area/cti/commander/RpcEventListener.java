@@ -9,7 +9,8 @@ public interface RpcEventListener {
     /**
      * 回调：收到CTI的事件通知
      *
+     * @param source  发送该事件的IPSC服务实例
      * @param request 该事件所对应的RPC请求
      */
-    void onEvent(RpcRequest request);
+    void onEvent(BusAddress source, RpcRequest request);
 }
