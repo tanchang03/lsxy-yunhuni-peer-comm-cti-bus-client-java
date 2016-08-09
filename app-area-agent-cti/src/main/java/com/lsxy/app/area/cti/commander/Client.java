@@ -19,22 +19,24 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * 客户端是从属于 {@link Unit} 的
  * <p>
  * 使用 {@link Unit#createClient} 创建客户端，<strong>不要</strong>使用构造函数。
+ * <p>
+ * BUS Client {@code type} 一律是 {@code 10}
  */
 public class Client {
-    Client(byte unitId, byte id, byte type, String ip, short port, RpcEventListener eventListener, ThreadPoolExecutor executor) throws InterruptedException {
+    Client(byte unitId, byte id, String ip, short port, RpcEventListener eventListener, ThreadPoolExecutor executor) throws InterruptedException {
         this.logger = LoggerFactory.getLogger(Client.class);
         this.unitId = unitId;
         this.connectingUnitId = -1;
         this.connected = false;
         this.id = id;
-        this.type = type;
+        this.type = 10; /// 静态值，10！
         this.ip = ip;
         this.port = port;
         this.eventListener = eventListener;
         this.executor = executor;
         this.executor.prestartAllCoreThreads();
         int errCode = com.lsxy.app.area.cti.busnetcli.Client.createConnect(
-                id, type, ip, port, "", (short) 0xff, "", "", ""
+                this.id, this.type, this.ip, this.port, "", (short) 0xff, "", "", ""
         );
         if (errCode != 0) {
             throw new RuntimeException(
