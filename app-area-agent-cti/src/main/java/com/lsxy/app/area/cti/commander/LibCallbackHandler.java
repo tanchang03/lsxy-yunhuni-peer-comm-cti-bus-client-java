@@ -77,7 +77,8 @@ class LibCallbackHandler implements com.lsxy.app.area.cti.busnetcli.Callbacks {
                     }
                     if (req != null) {
                         client.logger.debug(">>> client.eventListener.onEvent({})", req);
-                        client.eventListener.onEvent(req);
+                        BusAddress source = new BusAddress(head.getSrcUnitId(), head.getSrcClientId());
+                        client.eventListener.onEvent(source, req);
                         client.logger.debug("<<< client.eventListener.onEvent()");
                         return;
                     }
