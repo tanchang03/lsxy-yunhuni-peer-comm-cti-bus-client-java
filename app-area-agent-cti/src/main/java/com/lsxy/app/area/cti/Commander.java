@@ -1,8 +1,5 @@
 package com.lsxy.app.area.cti;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.slf4j.LoggerFactory;
-
 import java.io.CharArrayWriter;
 import java.io.IOException;
 import java.io.Writer;
@@ -10,6 +7,9 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.regex.Pattern;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.LoggerFactory;
 
 /**
  * CTI BUS 命令处理器

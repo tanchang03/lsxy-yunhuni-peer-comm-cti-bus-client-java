@@ -214,7 +214,14 @@ public class Unit {
      * @throws InterruptedException 程序结束?
      */
     public static Monitor createMonitor(byte localClientId, String ip, short port) throws InterruptedException {
-        return new Monitor(localUnitId, localClientId, ip, port);
+        logger.info(
+                ">>> createCommander(localClientId={}, ip={}, port={})",
+                localClientId, ip, port
+        );
+        Monitor monitor = new Monitor(localUnitId, localClientId, ip, port);
+        clients.put(localClientId, monitor);
+        logger.info("<<< createCommander() -> {}", monitor);
+        return monitor;
     }
 
     /**

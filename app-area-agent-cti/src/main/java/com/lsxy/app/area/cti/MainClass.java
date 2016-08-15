@@ -20,7 +20,7 @@ public class MainClass {
         logger.debug("initiate...");
         Unit.initiate((byte) 20);
         logger.debug("initiate OK!");
-        Client client = Unit.createCommander(
+        Commander commander = Unit.createCommander(
                 (byte) 0,
                 "192.168.2.100",
                 (source, request) -> logger.debug("收到事件：source={}, request={}", source, request)
@@ -33,7 +33,7 @@ public class MainClass {
             params.put("max_answer_seconds", (int) (50 * Math.random()));
             params.put("max_ring_seconds", (int) (10 * Math.random()));
 
-            client.createResource(
+            commander.createResource(
                     new BusAddress((byte) 0, (byte) 0),
                     "sys.call",
                     params,
@@ -44,7 +44,7 @@ public class MainClass {
                             String callId = (String) result;
                             Map<String, Object> params = new HashMap<>();
                             try {
-                                client.operateResource(
+                                commander.operateResource(
                                         new BusAddress((byte) 0, (byte) 0),
                                         callId,
                                         "sys.call.drop",

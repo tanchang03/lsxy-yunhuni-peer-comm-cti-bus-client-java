@@ -10,15 +10,15 @@ import org.slf4j.LoggerFactory;
  * <p>
  * 使用 {@link Unit#createCommander} 创建客户端，<strong>不要</strong>使用构造函数。
  * <p>
- * BUS Client {@code type} 一律是 {@code 10}
+ * Commander Client {@code type} 一律是 {@code 10}; Monitor Client {@code type} 一律是 {@code 3}.
  */
 public class Client {
     /**
-     * @param unitId        所属的本地Unit节点的ID
-     * @param id            客户端ID
-     * @param type          客户端 type
-     * @param ip            要连接的 CTI BUS 服务器 IP
-     * @param port          要连接的 CTI BUS 服务器端口
+     * @param unitId 所属的本地Unit节点的ID
+     * @param id     客户端ID
+     * @param type   客户端 type
+     * @param ip     要连接的 CTI BUS 服务器 IP
+     * @param port   要连接的 CTI BUS 服务器端口
      * @throws InterruptedException 启动期间程序被中断
      */
     Client(byte unitId, byte id, byte type, String ip, short port) throws InterruptedException {

@@ -8,6 +8,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import com.lsxy.app.area.cti.busnetcli.Head;
 
+import java.io.UnsupportedEncodingException;
+
 class LibCallbackHandler implements com.lsxy.app.area.cti.busnetcli.Callbacks {
 
     private final Logger logger = LoggerFactory.getLogger(LibCallbackHandler.class);
@@ -101,8 +103,14 @@ class LibCallbackHandler implements com.lsxy.app.area.cti.busnetcli.Callbacks {
                     commander.logger.error("error occurred in executor.execute()", e);
                 }
             });
-        } else if (client instanceof Commander) {
-            /// TODO:
+        } else if (client instanceof Monitor) {
+            Monitor monitor = (Monitor) client;
+            String data = null;
+            try {
+                data = new String(bytes, "ASCII");
+            } catch (UnsupportedEncodingException ignore) {
+            }
+            monitor.onData(data);
         }
         logger.debug("<<< data()");
     }
