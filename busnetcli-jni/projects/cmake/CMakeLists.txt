@@ -42,7 +42,7 @@ else()
 endif()
 TARGET_LINK_LIBRARIES(${PROJECT_NAME} busnetcli)
 
-# pthread
-# set(THREADS_PREFER_PTHREAD_FLAG ON)
-# find_package(Threads REQUIRED)
-# target_link_libraries(${PROJECT_NAME} Threads::Threads)
+# INSTALL
+INSTALL(
+	${PROJECT_NAME}
+)
