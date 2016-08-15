@@ -9,6 +9,10 @@ ADD_LIBRARY ( ${PROJECT_NAME} SHARED ${SRC} )
 # JNI need this!
 SET(GCC_COVERAGE_COMPILE_FLAGS "-fpic")
 
+# force c++
+set_source_files_properties(Client.c PROPERTIES LANGUAGE CXX)
+set_source_files_properties(callbacks.c PROPERTIES LANGUAGE CXX)
+
 IF ( ${JAVA_INCLUDE_PATH} and ${JAVA_INCLUDE_PATH2} )
     INCLUDE_DIRECTORIES ( ${JAVA_INCLUDE_PATH} )
     INCLUDE_DIRECTORIES ( ${JAVA_INCLUDE_PATH2} )
