@@ -1,4 +1,4 @@
-package com.lsxy.app.area.cti.commander;
+package com.lsxy.app.area.cti;
 
 /**
  * 单元级别事件回调接口

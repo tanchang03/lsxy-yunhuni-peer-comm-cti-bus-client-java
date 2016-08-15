@@ -1,4 +1,4 @@
-package com.lsxy.app.area.cti.commander;
+package com.lsxy.app.area.cti;
 
 import java.util.Map;
 import java.util.concurrent.*;
@@ -141,7 +141,7 @@ public class Unit {
     }
 
     /**
-     * 建立一个bus客户端链接
+     * 建立一个bus命令客户端
      *
      * @param localClientId 本地clientid
      * @param ip            BUS服务器IP地址
@@ -151,10 +151,10 @@ public class Unit {
      * @return 新建的客户端对象
      * @throws InterruptedException 程序结束?
      */
-    public static Client createClient(byte localClientId, String ip, short port,
-                                      RpcEventListener eventListener, ThreadPoolExecutor executor) throws InterruptedException {
+    public static Commander createCommander(byte localClientId, String ip, short port,
+                                            RpcEventListener eventListener, ThreadPoolExecutor executor) throws InterruptedException {
         logger.info(
-                ">>> createClient(localClientId={}, ip={}, port={}, eventListener={}, executor={})",
+                ">>> createCommander(localClientId={}, ip={}, port={}, eventListener={}, executor={})",
                 localClientId, ip, port, eventListener, executor
         );
         if (executor == null) {
@@ -164,14 +164,14 @@ public class Unit {
                     new ArrayBlockingQueue<>(processors * 1000, true)
             );
         }
-        Client client = new Client(localUnitId, localClientId, ip, port, eventListener, executor);
-        clients.put(localClientId, client);
-        logger.info("<<< createClient() -> {}", client);
-        return client;
+        Commander commander = new Commander(localUnitId, localClientId, ip, port, eventListener, executor);
+        clients.put(localClientId, commander);
+        logger.info("<<< createCommander() -> {}", commander);
+        return commander;
     }
 
     /**
-     * 建立一个bus客户端链接
+     * 建立一个bus命令客户端
      *
      * @param localClientId 本地 Client Id
      * @param ip            BUS服务器IP地址
@@ -180,12 +180,12 @@ public class Unit {
      * @return 新建的客户端对象
      * @throws InterruptedException 程序结束?
      */
-    public static Client createClient(byte localClientId, String ip, short port, RpcEventListener eventListener) throws InterruptedException {
-        return createClient(localClientId, ip, port, eventListener, null);
+    public static Commander createCommander(byte localClientId, String ip, short port, RpcEventListener eventListener) throws InterruptedException {
+        return createCommander(localClientId, ip, port, eventListener, null);
     }
 
     /**
-     * 建立一个bus客户端链接
+     * 建立一个bus命令客户端
      * <p>
      * 新建的 {@link Client} 对象的线程池执行器的
      * 新建的 {@link Client} 对象的线程池执行器的 corePoolSize是处理器核心数，
@@ -200,7 +200,32 @@ public class Unit {
      * @return 新建的客户端对象
      * @throws InterruptedException 程序结束?
      */
-    public static Client createClient(byte localClientId, String ip, RpcEventListener eventListener) throws InterruptedException {
-        return createClient(localClientId, ip, (short) 8088, eventListener);
+    public static Commander createCommander(byte localClientId, String ip, RpcEventListener eventListener) throws InterruptedException {
+        return createCommander(localClientId, ip, (short) 8088, eventListener);
+    }
+
+    /**
+     * 建立一个bus监控客户端
+     *
+     * @param localClientId 本地 Client Id
+     * @param ip            BUS服务器IP地址
+     * @param port          BUS服务器端口
+     * @return 新建的客户端对象
+     * @throws InterruptedException 程序结束?
+     */
+    public static Monitor createMonitor(byte localClientId, String ip, short port) throws InterruptedException {
+        return new Monitor(localUnitId, localClientId, ip, port);
+    }
+
+    /**
+     * 建立一个bus监控客户端
+     *
+     * @param localClientId 本地 Client Id
+     * @param ip            BUS服务器IP地址
+     * @return 新建的客户端对象
+     * @throws InterruptedException 程序结束?
+     */
+    public static Monitor createMonitor(byte localClientId, String ip) throws InterruptedException {
+        return createMonitor(localClientId, ip, (short) 8088);
     }
 }

@@ -1,4 +1,4 @@
-package com.lsxy.app.area.cti.commander;
+package com.lsxy.app.area.cti;
 
 /**
  * RPC 回复。CTI服务使用这个格式响应java应用服务的RPC调用

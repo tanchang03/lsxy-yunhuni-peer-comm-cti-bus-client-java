@@ -1,4 +1,4 @@
-package com.lsxy.app.area.cti.commander;
+package com.lsxy.app.area.cti;
 
 /**
  * RPC 事件监听器

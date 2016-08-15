@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Scanner;
 
-import com.lsxy.app.area.cti.commander.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +20,7 @@ public class MainClass {
         logger.debug("initiate...");
         Unit.initiate((byte) 20);
         logger.debug("initiate OK!");
-        Client client = Unit.createClient(
+        Client client = Unit.createCommander(
                 (byte) 0,
                 "192.168.2.100",
                 (source, request) -> logger.debug("收到事件：source={}, request={}", source, request)

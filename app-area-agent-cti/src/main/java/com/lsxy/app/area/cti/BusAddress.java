@@ -1,6 +1,4 @@
-package com.lsxy.app.area.cti.commander;
-
-import com.lsxy.app.area.cti.busnetcli.Head;
+package com.lsxy.app.area.cti;
 
 /**
  * CTI BUS 地址信息
