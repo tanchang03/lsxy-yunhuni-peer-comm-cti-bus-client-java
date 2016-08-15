@@ -22,7 +22,7 @@ public class MainClass {
         logger.debug("initiate OK!");
         Commander commander = Unit.createCommander(
                 (byte) 0,
-                "192.168.2.100",
+                "127.0.0.1",
                 (source, request) -> logger.debug("收到事件：source={}, request={}", source, request)
         );
 
