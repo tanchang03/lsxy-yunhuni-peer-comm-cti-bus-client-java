@@ -5,14 +5,6 @@ cmake_minimum_required(VERSION 2.8)
 AUX_SOURCE_DIRECTORY(../../src SRC)
 ADD_LIBRARY ( ${PROJECT_NAME} SHARED ${SRC} )
 
-# Generate position-independent code (PIC) suitable for use in a shared library, if supported for the target machine.
-# JNI need this!
-SET(GCC_COVERAGE_COMPILE_FLAGS "-fpic")
-
-# force c++
-set_source_files_properties(Client.c callbacks.c PROPERTIES LANGUAGE CXX)
-
-
 IF ( ${JAVA_INCLUDE_PATH} and ${JAVA_INCLUDE_PATH2} )
     INCLUDE_DIRECTORIES ( ${JAVA_INCLUDE_PATH} )
     INCLUDE_DIRECTORIES ( ${JAVA_INCLUDE_PATH2} )
