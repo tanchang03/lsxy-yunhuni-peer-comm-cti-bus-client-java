@@ -45,7 +45,11 @@ endif()
 TARGET_LINK_LIBRARIES(${PROJECT_NAME} busnetcli)
 
 # INSTALL
+if(NOT DEFINED ENV{INSTALL_PREFIX})
+	message(WARN, "Environment variable INSTALL_PREFIX not defined, use /usr/local as INSTALL_PREFIX.")
+	SET(INSTALL_PREFIX "/usr/local")
+endif()
 INSTALL(
 	TARGETS ${PROJECT_NAME}
-	DESTINATION /usr/local
+	DESTINATION INSTALL_PREFIX
 )
