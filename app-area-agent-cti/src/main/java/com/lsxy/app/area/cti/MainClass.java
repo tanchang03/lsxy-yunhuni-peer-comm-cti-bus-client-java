@@ -21,7 +21,7 @@ public class MainClass {
         Unit.initiate((byte) 24);
         logger.debug("initiate OK!");
 
-        Monitor monitor = Unit.createMonitor(10, '127.0.0.1');
+        Monitor monitor = Unit.createMonitor((byte) 10, "127.0.0.1");
 
         String inputStr;
         Scanner scanner = new Scanner(System.in);
