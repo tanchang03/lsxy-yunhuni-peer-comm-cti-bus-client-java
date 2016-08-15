@@ -215,12 +215,12 @@ public class Unit {
      */
     public static Monitor createMonitor(byte localClientId, String ip, short port) throws InterruptedException {
         logger.info(
-                ">>> createCommander(localClientId={}, ip={}, port={})",
+                ">>> createMonitor(localClientId={}, ip={}, port={})",
                 localClientId, ip, port
         );
         Monitor monitor = new Monitor(localUnitId, localClientId, ip, port);
         clients.put(localClientId, monitor);
-        logger.info("<<< createCommander() -> {}", monitor);
+        logger.info("<<< createMonitor() -> {}", monitor);
         return monitor;
     }
 
