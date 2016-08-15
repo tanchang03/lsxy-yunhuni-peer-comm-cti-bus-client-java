@@ -1,5 +1,7 @@
 PROJECT(busnetcli-jni)
 
+cmake_minimum_required(VERSION 2.8)
+
 AUX_SOURCE_DIRECTORY(../../src SRC)
 ADD_LIBRARY ( ${PROJECT_NAME} SHARED ${SRC} )
 
@@ -44,5 +46,5 @@ TARGET_LINK_LIBRARIES(${PROJECT_NAME} busnetcli)
 
 # INSTALL
 INSTALL(
-	${PROJECT_NAME}
+	TARGETS ${PROJECT_NAME}
 )
