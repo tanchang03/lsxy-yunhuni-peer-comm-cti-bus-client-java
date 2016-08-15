@@ -58,14 +58,25 @@ class LibCallbackHandler implements com.lsxy.app.area.cti.busnetcli.Callbacks {
 
     public void data(Head head, byte[] bytes) {
         logger.debug(">>> data(head={}. dataLength={})", head, bytes.length);
-        byte clientId = head.getDstClientId();
-        Client client = Unit.clients.get(clientId);
-        if (client == null) {
-            logger.error("cannot find client<id={}>", clientId);
-            return;
-        }
-        if (client instanceof Commander) {
-            Commander commander = (Commander) client;
+        byte dstType = head.getDstClientType();
+        if (dstType == (byte) 3) {
+            Monitor monitor = (Monitor) Unit.clients.get(head.getDstClientId());
+            if (monitor == null) {
+                logger.error("cannot find client<id={}>", head.getDstClientId());
+                return;
+            }
+            String data = null;
+            try {
+                data = new String(bytes, "ASCII");
+            } catch (UnsupportedEncodingException ignore) {
+            }
+            monitor.onData(data);
+        } else if (dstType == (byte) 10) {
+            Commander commander = (Commander) Unit.clients.get(head.getDstClientId());
+            if (commander == null) {
+                logger.error("cannot find client<id={}>", head.getDstClientId());
+                return;
+            }
             commander.executor.execute(() -> {
                 try {
                     String rpcTxt = new String(bytes, "UTF-8");
@@ -103,14 +114,6 @@ class LibCallbackHandler implements com.lsxy.app.area.cti.busnetcli.Callbacks {
                     commander.logger.error("error occurred in executor.execute()", e);
                 }
             });
-        } else if (client instanceof Monitor) {
-            Monitor monitor = (Monitor) client;
-            String data = null;
-            try {
-                data = new String(bytes, "ASCII");
-            } catch (UnsupportedEncodingException ignore) {
-            }
-            monitor.onData(data);
         }
         logger.debug("<<< data()");
     }
