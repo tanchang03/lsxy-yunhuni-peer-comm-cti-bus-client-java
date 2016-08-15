@@ -29,7 +29,7 @@ void recvdata(void * arg, unsigned char local_client_id,
               SMARTBUS_PACKET_HEAD * head, void * data, int size) {
     JNIEnv* env = get_current_thread_env();
     jbyteArray jbytes_data = env->NewByteArray(size);
-    env->SetByteArrayRegion(jbytes_data, 0, size, data);
+    env->SetByteArrayRegion(jbytes_data, 0, size, (jbyte*) data);
     env->CallStaticVoidMethod(
         cls_client, meth_client_recvdata,
         (jbyte) head->cmd, (jbyte) head->cmdtype,
@@ -60,7 +60,7 @@ void trace(const char * msg) {
         return;
     JNIEnv* env = get_current_thread_env();
     jbyteArray jbytes_msg = env->NewByteArray(msg_sz);
-    env->SetByteArrayRegion(jbytes_msg, 0, msg_sz, msg);
+    env->SetByteArrayRegion(jbytes_msg, 0, msg_sz, (jbyte*) msg);
     env->CallStaticVoidMethod(
         cls_client, meth_client_log,
         jbytes_msg, (jboolean) false
@@ -77,7 +77,7 @@ void trace_err(const char * msg) {
         return;
     JNIEnv* env = get_current_thread_env();
     jbyteArray jbytes_msg = env->NewByteArray(msg_sz);
-    env->SetByteArrayRegion(jbytes_msg, 0, msg_sz, msg);
+    env->SetByteArrayRegion(jbytes_msg, 0, msg_sz, (jbyte*) msg);
     env->CallStaticVoidMethod(
         cls_client, meth_client_log,
         jbytes_msg, (jboolean) true
