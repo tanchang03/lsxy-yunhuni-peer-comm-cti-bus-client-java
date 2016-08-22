@@ -76,16 +76,16 @@ public class Monitor extends Client {
         }
         if (flag == 0) {
             si.name = kvs.get("name");
-            si.type = Integer.parseInt(kvs.get("type"));
+            si.type = kvs.get("type") == null ? null : Integer.parseInt(kvs.get("type"));
             si.machineName = kvs.get("machinename");
             si.os = kvs.get("os");
-            si.mode = Integer.parseInt(kvs.get("mode").trim());
+            si.mode = kvs.get("mode") == null ? null : Integer.parseInt(kvs.get("mode").trim());
             si.prj = kvs.get("prj");
-            si.pi = Long.parseLong(kvs.get("pi").trim());
+            si.pi = kvs.get("pi") == null ? null : Long.parseLong(kvs.get("pi").trim());
             si.ipscVersion = kvs.get("ipsc_version");
-            si.startupTime = LocalDateTime.parse(kvs.get("startup_time").trim(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-            si.dogStatus = Integer.parseInt(kvs.get("dog_status").trim());
-            si.loadlevel = Integer.parseInt(kvs.get("loadlevel").trim());
+            si.startupTime = kvs.get("startup_time") == null ? null : LocalDateTime.parse(kvs.get("startup_time").trim(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            si.dogStatus = kvs.get("dog_status") == null ? null : Integer.parseInt(kvs.get("dog_status").trim());
+            si.loadlevel = kvs.get("loadlevel") == null ? null : Integer.parseInt(kvs.get("loadlevel").trim());
         } else {
             ServerInfo _si = si;
             kvs.forEach((k, v) -> _si.loads.put(k, Integer.parseInt(v)));
