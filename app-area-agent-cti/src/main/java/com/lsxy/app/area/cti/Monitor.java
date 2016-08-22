@@ -105,7 +105,6 @@ public class Monitor extends Client {
         } else {
             logger.debug("svrres: {}", kvs);
             ServerInfo _si = si;
-            _si.loads = new HashMap<>();
             kvs.forEach((k, v) -> {
                 _si.loads.put(k, Integer.parseInt(v));
                 logger.debug("_si.loads: {}", _si.loads);

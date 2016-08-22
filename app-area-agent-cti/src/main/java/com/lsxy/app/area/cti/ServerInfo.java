@@ -3,6 +3,7 @@ package com.lsxy.app.area.cti;
 import java.util.Map;
 import java.util.HashMap;
 import java.time.LocalDateTime;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * CTI服务器(IPSC实例)负载信息
@@ -22,7 +23,7 @@ public class ServerInfo {
     LocalDateTime startupTime;
     Integer dogStatus;
     Integer loadlevel;          //系统负载水平。0-100，数字越大，表示负载率越高。
-    Map<String, Integer> loads; // KEY-VALUE 负载信息表
+    Map<String, Integer> loads = new ConcurrentHashMap<>(); // KEY-VALUE 负载信息表
 
     @Override
     public String toString() {
