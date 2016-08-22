@@ -35,11 +35,12 @@ public class Monitor extends Client {
     }
 
     ThreadPoolExecutor executor;
-    ConcurrentHashMap<String, ServerInfo> serverInfoMap;
+    private ConcurrentHashMap<String, ServerInfo> serverInfoMap;
 
     private Map<String, String> parseKeyValStr(String s) {
-        Map<String, String> result = new HashMap<>();
-        for (String i : s.split("(,|\\|)")) {
+        String[] ss = s.split("(,|\\|)");
+        Map<String, String> result = new HashMap<>(ss.length);
+        for (String i : ss) {
             String[] kv = i.split("=");
             result.put(kv[0], kv[1]);
         }
