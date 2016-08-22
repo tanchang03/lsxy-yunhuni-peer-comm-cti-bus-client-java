@@ -24,10 +24,10 @@ class LibCallbackHandler implements com.lsxy.app.area.cti.busnetcli.Callbacks {
 
     public void connect(byte localClientId, int accessPointUnitId, int errorCode) {
         if (errorCode == 0)
-            // 客户端链接成功
+            // 客户端连接成功
             logger.info("[{}:{}] connection succeed. ConnectingUnitId={}", Unit.getLocalUnitId(), localClientId, accessPointUnitId);
         else
-            // 客户端链接失败
+            // 客户端连接失败
             logger.error("[{}:{}] connection failed. ErrorCode={}", Unit.getLocalUnitId(), localClientId, errorCode);
         Client client = Unit.clients.get(localClientId);
         if (client != null) {
@@ -70,7 +70,8 @@ class LibCallbackHandler implements com.lsxy.app.area.cti.busnetcli.Callbacks {
                 data = new String(bytes, "ASCII");
             } catch (UnsupportedEncodingException ignore) {
             }
-            monitor.onData(data);
+            String finalData = data;
+            monitor.executor.execute(() -> monitor.process(finalData));
         } else if (dstType == (byte) 10) {
             Commander commander = (Commander) Unit.clients.get(head.getDstClientId());
             if (commander == null) {
