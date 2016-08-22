@@ -104,6 +104,7 @@ public class Monitor extends Client {
                 si.loadlevel = Integer.parseInt(kvs.get("loadlevel").trim());
         } else {
             ServerInfo _si = si;
+            _si.loads = new HashMap<>();
             kvs.forEach((k, v) -> _si.loads.put(k, Integer.parseInt(v)));
         }
 
