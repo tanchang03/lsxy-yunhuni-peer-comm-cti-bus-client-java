@@ -76,16 +76,32 @@ public class Monitor extends Client {
         }
         if (flag == 0) {
             si.name = kvs.get("name");
-            si.type = kvs.get("type") == null ? null : Integer.parseInt(kvs.get("type"));
+            if (kvs.get("type") == null)
+                si.type = null;
+            else
+                si.type = Integer.parseInt(kvs.get("type"));
             si.machineName = kvs.get("machinename");
             si.os = kvs.get("os");
-            si.mode = kvs.get("mode") == null ? null : Integer.parseInt(kvs.get("mode").trim());
+            if (kvs.get("mode") == null)
+                si.mode = null;
+            else
+                si.mode = Integer.parseInt(kvs.get("mode").trim());
             si.prj = kvs.get("prj");
-            si.pi = kvs.get("pi") == null ? null : Long.parseLong(kvs.get("pi").trim());
+            if (kvs.get("pi") == null)
+                si.pi = null;
+            else
+                si.pi = Long.parseLong(kvs.get("pi").trim());
             si.ipscVersion = kvs.get("ipsc_version");
-            si.startupTime = kvs.get("startup_time") == null ? null : LocalDateTime.parse(kvs.get("startup_time").trim(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-            si.dogStatus = kvs.get("dog_status") == null ? null : Integer.parseInt(kvs.get("dog_status").trim());
-            si.loadlevel = kvs.get("loadlevel") == null ? null : Integer.parseInt(kvs.get("loadlevel").trim());
+            if (kvs.get("startup_time") == null)
+                si.startupTime = null;
+            else
+                si.startupTime = LocalDateTime.parse(kvs.get("startup_time").trim(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            if (kvs.get("dog_status") == null) si.dogStatus = null;
+            else si.dogStatus = Integer.parseInt(kvs.get("dog_status").trim());
+            if (kvs.get("loadlevel") == null)
+                si.loadlevel = null;
+            else
+                si.loadlevel = Integer.parseInt(kvs.get("loadlevel").trim());
         } else {
             ServerInfo _si = si;
             kvs.forEach((k, v) -> _si.loads.put(k, Integer.parseInt(v)));

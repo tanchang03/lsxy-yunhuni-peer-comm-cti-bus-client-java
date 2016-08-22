@@ -13,16 +13,16 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ServerInfo {
     String id;              //ipsc的id号
     String name;
-    int type;
+    Integer type;
     String machineName;
     String os;
-    int mode;
+    Integer mode;
     String prj;
-    long pi;
+    Long pi;
     String ipscVersion;
     LocalDateTime startupTime;
-    int dogStatus;
-    int loadlevel;          //系统负载水平。0-100，数字越大，表示负载率越高。
+    Integer dogStatus;
+    Integer loadlevel;          //系统负载水平。0-100，数字越大，表示负载率越高。
     ConcurrentHashMap<String, Integer> loads; // KEY-VALUE 负载信息表
 
     @Override
@@ -42,7 +42,7 @@ public class ServerInfo {
         return name;
     }
 
-    public int getType() {
+    public Integer getType() {
         return type;
     }
 
@@ -54,7 +54,7 @@ public class ServerInfo {
         return os;
     }
 
-    public int getMode() {
+    public Integer getMode() {
         return mode;
     }
 
@@ -62,7 +62,7 @@ public class ServerInfo {
         return prj;
     }
 
-    public long getPi() {
+    public Long getPi() {
         return pi;
     }
 
@@ -74,14 +74,14 @@ public class ServerInfo {
         return startupTime;
     }
 
-    public int getDogStatus() {
+    public Integer getDogStatus() {
         return dogStatus;
     }
 
     /**
      * 系统负载水平。0-100，数字越大，表示负载率越高。
      */
-    public int getLoadLevel() {
+    public Integer getLoadLevel() {
         return loadlevel;
     }
 
