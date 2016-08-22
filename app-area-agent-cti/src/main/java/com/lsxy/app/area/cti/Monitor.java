@@ -1,6 +1,7 @@
 package com.lsxy.app.area.cti;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -82,7 +83,7 @@ public class Monitor extends Client {
             si.prj = kvs.get("prj");
             si.pi = Long.parseLong(kvs.get("pi"));
             si.ipscVersion = kvs.get("ipsc_version");
-            si.startupTime = LocalDateTime.parse(kvs.get("startup_time"));
+            si.startupTime = LocalDateTime.parse(kvs.get("startup_time"), DateTimeFormatter.ofPattern("yyyy-mm-dd HH:mm:ss"));
             si.dogStatus = Integer.parseInt(kvs.get("dog_status"));
             si.loadlevel = Integer.parseInt(kvs.get("loadlevel"));
         } else {
