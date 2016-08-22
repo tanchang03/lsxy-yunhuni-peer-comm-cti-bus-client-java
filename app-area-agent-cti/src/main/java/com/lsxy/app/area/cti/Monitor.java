@@ -107,7 +107,7 @@ public class Monitor extends Client {
             kvs.forEach((k, v) -> _si.loads.put(k, Integer.parseInt(v)));
         }
 
-        logger.debug("%s", getServerInfoMap().get(id));
+        logger.debug("{}", getServerInfoMap().get(id));
     }
 
     public Map<String, ServerInfo> getServerInfoMap() {
