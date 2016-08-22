@@ -38,9 +38,9 @@ public class Monitor extends Client {
     private ConcurrentHashMap<String, ServerInfo> serverInfoMap;
 
     private Map<String, String> parseKeyValStr(String s) {
-        logger.debug("s=%s", s);
+        logger.debug("s={}", s);
         String[] ss = s.split("(,|\\|)");
-        logger.debug("ss=%ss, len(ss)=%s", s, ss.length);
+        logger.debug("ss={}, len(ss)={}", s, ss.length);
         Map<String, String> result = new HashMap<>(ss.length);
         for (String i : ss) {
             String[] kv = i.split("=");
