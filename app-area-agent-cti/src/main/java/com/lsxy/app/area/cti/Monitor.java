@@ -43,9 +43,15 @@ public class Monitor extends Client {
         logger.debug("ss={}, len(ss)={}", s, ss.length);
         Map<String, String> result = new HashMap<>(ss.length);
         for (String i : ss) {
-            String[] kv = i.split("=");
-            logger.debug("{} -> key - value: {}", i, kv);
-            result.put(kv[0], kv[1]);
+            String[] kv = i.split("=", 2);
+            String key = null;
+            String value = null;
+            if (kv.length > 0)
+                key = kv[0];
+            if (kv.length > 1)
+                value = kv[1];
+            if (key != null)
+                result.put(key, value);
         }
         return result;
     }
