@@ -44,7 +44,7 @@ public class Monitor extends Client {
         Map<String, String> result = new HashMap<>(ss.length);
         for (String i : ss) {
             String[] kv = i.split("=");
-            logger.debug("key - value = {}", kv);
+            logger.debug("{} -> key - value: {}", i, kv);
             result.put(kv[0], kv[1]);
         }
         return result;
