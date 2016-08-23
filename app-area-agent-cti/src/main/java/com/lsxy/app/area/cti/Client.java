@@ -38,7 +38,7 @@ public class Client {
                     String.format("com.lsxy.app.area.cti.busnetcli.Client.createConnect returns %d", errCode)
             );
         }
-        Thread.sleep(1000); //Pause for 1 seconds
+//        Thread.sleep(1000); //Pause for 1 seconds
     }
 
     Logger logger;
