@@ -66,6 +66,7 @@ public class Monitor extends Client {
         if (flag == null)
             return;
         Map<String, String> kvs = parseKeyValStr(parts[1]);
+        logger.debug("kvs = {}", kvs);
         String id = kvs.remove("id");
         ServerInfo si = serverInfoMap.get(id);
         if (si == null) {
@@ -104,6 +105,7 @@ public class Monitor extends Client {
             ServerInfo _si = si;
             kvs.forEach((k, v) -> {
                 Integer _v = v == null ? null : Integer.parseInt(v);
+                logger.debug("{} : {}", k, _v);
                 _si.loads.put(k, _v);
             });
         }
