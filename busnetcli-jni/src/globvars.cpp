@@ -1,6 +1,6 @@
 #include "globvars.h"
 
-JavaVM *jvm;
+JavaVM *jvm = NULL;
 
 jclass cls_client = NULL;
 

@@ -1,112 +1,41 @@
-package com.lsxy.app.area.cti.commander;
+package com.lsxy.app.area.cti;
 
 import java.io.CharArrayWriter;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.UUID;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.regex.Pattern;
 
-import org.slf4j.Logger;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 /**
- * CTI BUS 客户端
+ * CTI BUS 命令处理器
  * <p>
- * 客户端是从属于 {@link Unit} 的
- * <p>
- * 使用 {@link Unit#createClient} 创建客户端，<strong>不要</strong>使用构造函数。
- * <p>
- * BUS Client {@code type} 一律是 {@code 10}
+ * Created by tanbr on 2016/8/15.
  */
-public class Client {
-    Client(byte unitId, byte id, String ip, short port, RpcEventListener eventListener, ThreadPoolExecutor executor) throws InterruptedException {
-        this.logger = LoggerFactory.getLogger(Client.class);
-        this.unitId = unitId;
-        this.connectingUnitId = -1;
-        this.connected = false;
-        this.id = id;
-        this.type = 10; /// 静态值，10！
-        this.ip = ip;
-        this.port = port;
+public class Commander extends Client {
+    /**
+     * @param unitId        所属的本地Unit节点的ID
+     * @param id            客户端ID
+     * @param ip            要连接的 CTI BUS 服务器 IP
+     * @param port          要连接的 CTI BUS 服务器端口
+     * @param eventListener RPC事件监听器
+     * @param executor      RPC事件和回复处理的执行器
+     * @throws InterruptedException 启动期间程序被中断
+     */
+    Commander(byte unitId, byte id, String ip, short port, RpcEventListener eventListener, ThreadPoolExecutor executor) throws InterruptedException {
+        super(unitId, id, (byte) 10, ip, port);
+        this.logger = LoggerFactory.getLogger(Commander.class);
         this.eventListener = eventListener;
         this.executor = executor;
         this.executor.prestartAllCoreThreads();
-        int errCode = com.lsxy.app.area.cti.busnetcli.Client.createConnect(
-                this.id, this.type, this.ip, this.port, "", (short) 0xff, "", "", ""
-        );
-        if (errCode != 0) {
-            throw new RuntimeException(
-                    String.format("com.lsxy.app.area.cti.busnetcli.Client.createConnect returns %d", errCode)
-            );
-        }
-        Thread.sleep(1000); //Pause for 1 seconds
     }
 
-    Logger logger;
-    private byte unitId;
-    byte connectingUnitId;
-    boolean connected;
-    private byte id;
-    private byte type;
-    private String ip;
-    private short port;
     RpcEventListener eventListener;
     ThreadPoolExecutor executor;
-
-    /**
-     * @return 该客户端所述的本地 BUS UNIT 的 ID，即 {@link Unit#getLocalUnitId} 属性
-     */
-    public byte getUnitId() {
-        return unitId;
-    }
-
-    /**
-     * @return 是否连接到了 CTI BUS 服务器。
-     */
-    public boolean getConnected() {
-        return connected;
-    }
-
-    /**
-     * @return 该客户端所连接的CTI服务器的 BUS UNIT ID
-     * <br>
-     * <code>-1</code> 表示未曾连接到服务器。
-     */
-    public byte getConnectingUnitId() {
-        return connectingUnitId;
-    }
-
-    /**
-     * @return 该客户端所在其接的CTI服务器的BUS客户端ID(不同的 Unit 下, Client ID 可以重复)
-     */
-    public byte getId() {
-        return id;
-    }
-
-    /**
-     * @return 该客户端所在其接的CTI服务器的BUS客户端类型标志
-     */
-    public byte getType() {
-        return type;
-    }
-
-    /**
-     * @return 该客户端所在其接的CTI服务器的IP地址
-     */
-    public String getIp() {
-        return ip;
-    }
-
-    /**
-     * @return 该客户端所在其接的CTI服务器的端口
-     */
-    public short getPort() {
-        return port;
-    }
 
     /**
      * 在指定的CTI服务(IPSC)节点上新建一个 CTI 资源
@@ -142,8 +71,8 @@ public class Client {
         // 构建 JSON 数据结构格式： [[unit_id, client_id], rpc_id, params]
         Object[] obj = new Object[3];
         Integer[] item0 = new Integer[2];
-        item0[0] = (int) this.unitId;
-        item0[1] = (int) this.id;
+        item0[0] = (int) this.getUnitId();
+        item0[1] = (int) this.getId();
         obj[0] = item0;
         obj[1] = rpcId;
         obj[2] = params;
@@ -160,10 +89,10 @@ public class Client {
         // 调用 JNI：启动 IPSC 流程
         this.logger.debug(
                 "createResource: >>> launchFlow(id={}, dstUnitId={}, dstIpscIndex={}, projectId={}, flowId={}, params={})",
-                this.id, dstUnitId, dstIpscIndex, projectId, flowId, w.toString()
+                this.getId(), dstUnitId, dstIpscIndex, projectId, flowId, w.toString()
         );
         int fiId = com.lsxy.app.area.cti.busnetcli.Client.launchFlow(
-                this.id, dstUnitId, dstIpscIndex, projectId, flowId, 1, 0, w.toString()
+                this.getId(), dstUnitId, dstIpscIndex, projectId, flowId, 1, 0, w.toString()
         );
         this.logger.debug("createResource: <<< launchFlow() -> {}", fiId);
         if (fiId < 0) {
@@ -205,8 +134,8 @@ public class Client {
         // 构建 JSON 数据结构格式： [[unit_id, client_id], rpc_id, method, params]
         Object[] obj = new Object[4];
         Integer[] item0 = new Integer[2];
-        item0[0] = (int) this.unitId;
-        item0[1] = (int) this.id;
+        item0[0] = (int) this.getUnitId();
+        item0[1] = (int) this.getId();
         obj[0] = item0;
         obj[1] = rpcId;
         obj[2] = method;
@@ -224,10 +153,10 @@ public class Client {
         // 调用 JNI：向 IPSC 流程发送订阅通知
         this.logger.debug(
                 "operateResource: >>> sendNotification(id={}, dstUnitId={}, dstIpscIndex={}, projectId={}, titleId={}, params={})",
-                this.id, dstUnitId, dstIpscIndex, projectId, id, w.toString()
+                this.getId(), dstUnitId, dstIpscIndex, projectId, id, w.toString()
         );
         int ivkId = com.lsxy.app.area.cti.busnetcli.Client.sendNotification(
-                this.id, dstUnitId, dstIpscIndex, projectId, id, 0, 15 * 1000, w.toString()
+                this.getId(), dstUnitId, dstIpscIndex, projectId, id, 0, 15 * 1000, w.toString()
         );
         this.logger.debug("operateResource: <<< sendNotification() -> {}", ivkId);
         if (ivkId < 0) {

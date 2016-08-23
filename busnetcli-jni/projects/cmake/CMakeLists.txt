@@ -1,11 +1,9 @@
 PROJECT(busnetcli-jni)
 
+cmake_minimum_required(VERSION 2.8)
+
 AUX_SOURCE_DIRECTORY(../../src SRC)
 ADD_LIBRARY ( ${PROJECT_NAME} SHARED ${SRC} )
-
-# Generate position-independent code (PIC) suitable for use in a shared library, if supported for the target machine.
-# JNI need this!
-SET(GCC_COVERAGE_COMPILE_FLAGS "-fpic")
 
 IF ( ${JAVA_INCLUDE_PATH} and ${JAVA_INCLUDE_PATH2} )
     INCLUDE_DIRECTORIES ( ${JAVA_INCLUDE_PATH} )
@@ -42,7 +40,11 @@ else()
 endif()
 TARGET_LINK_LIBRARIES(${PROJECT_NAME} busnetcli)
 
-# pthread
-# set(THREADS_PREFER_PTHREAD_FLAG ON)
-# find_package(Threads REQUIRED)
-# target_link_libraries(${PROJECT_NAME} Threads::Threads)
+# INSTALL
+if(NOT DEFINED ENV{INSTALL_PREFIX})
+	message(WARN, "Environment variable INSTALL_PREFIX not defined, use /usr/local as INSTALL_PREFIX.")
+	SET(INSTALL_PREFIX "/usr/local")
+endif()
+INSTALL(TARGETS ${PROJECT_NAME}
+	LIBRARY DESTINATION lib
+)

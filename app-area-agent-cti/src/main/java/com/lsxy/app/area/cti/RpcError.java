@@ -1,4 +1,4 @@
-package com.lsxy.app.area.cti.commander;
+package com.lsxy.app.area.cti;
 
 /**
  * RPC 错误。由 CTI 服务器返回
