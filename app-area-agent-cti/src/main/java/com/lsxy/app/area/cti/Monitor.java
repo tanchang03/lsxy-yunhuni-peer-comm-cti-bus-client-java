@@ -48,7 +48,7 @@ public class Monitor extends Client {
             if (kv.length > 0)
                 key = kv[0];
             if (kv.length > 1)
-                value = kv[1];
+                value = kv[1].trim();
             if (key != null)
                 result.put(key, value);
         }
