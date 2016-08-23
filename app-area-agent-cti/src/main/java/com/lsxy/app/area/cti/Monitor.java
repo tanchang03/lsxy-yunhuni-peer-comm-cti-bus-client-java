@@ -103,7 +103,8 @@ public class Monitor extends Client {
         } else {
             ServerInfo _si = si;
             kvs.forEach((k, v) -> {
-                _si.loads.put(k, Integer.parseInt(v));
+                Integer _v = v == null ? null : Integer.parseInt(v);
+                _si.loads.put(k, _v);
             });
         }
         logger.debug("{}", si);
