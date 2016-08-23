@@ -60,7 +60,7 @@ public class Monitor extends Client {
         String[] parts = s.split(":", 2);
         if ("svr".equals(parts[0].toLowerCase())) {
             flag = 0;
-        } else if ("svrres".equals(parts[1].toLowerCase())) {
+        } else if ("svrres".equals(parts[0].toLowerCase())) {
             flag = 1;
         }
         if (flag == null)
