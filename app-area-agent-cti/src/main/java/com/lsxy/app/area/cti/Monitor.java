@@ -66,7 +66,6 @@ public class Monitor extends Client {
         if (flag == null)
             return;
         Map<String, String> kvs = parseKeyValStr(parts[1]);
-        logger.debug("kvs = {}", kvs);
         String id = kvs.remove("id");
         ServerInfo si = serverInfoMap.get(id);
         if (si == null) {
@@ -84,34 +83,32 @@ public class Monitor extends Client {
             if (kvs.get("mode") == null)
                 si.mode = null;
             else
-                si.mode = Integer.parseInt(kvs.get("mode").trim());
+                si.mode = Integer.parseInt(kvs.get("mode"));
             si.prj = kvs.get("prj");
             if (kvs.get("pi") == null)
                 si.pi = null;
             else
-                si.pi = Long.parseLong(kvs.get("pi").trim());
+                si.pi = Long.parseLong(kvs.get("pi"));
             si.ipscVersion = kvs.get("ipsc_version");
             if (kvs.get("startup_time") == null)
                 si.startupTime = null;
             else
                 si.startupTime = LocalDateTime.parse(kvs.get("startup_time").trim(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
             if (kvs.get("dog_status") == null) si.dogStatus = null;
-            else si.dogStatus = Integer.parseInt(kvs.get("dog_status").trim());
+            else si.dogStatus = Integer.parseInt(kvs.get("dog_status"));
             if (kvs.get("loadlevel") == null)
                 si.loadlevel = null;
             else
-                si.loadlevel = Integer.parseInt(kvs.get("loadlevel").trim());
+                si.loadlevel = Integer.parseInt(kvs.get("loadlevel"));
         } else {
             ServerInfo _si = si;
             kvs.forEach((k, v) -> {
                 Integer _v = null;
                 if (v != null)
                     _v = Integer.parseInt(v);
-                logger.debug("{} : {}", k, _v);
                 _si.loads.put(k, _v);
             });
         }
-        logger.debug("{}", si);
     }
 
     public Map<String, ServerInfo> getServerInfoMap() {
