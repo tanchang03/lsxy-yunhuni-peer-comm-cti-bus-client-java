@@ -39,9 +39,7 @@ public class Monitor extends Client {
     private ConcurrentHashMap<String, ServerInfo> serverInfoMap;
 
     private Map<String, String> parseKeyValStr(String s) {
-        logger.debug("s={}", s);
         String[] ss = s.split("(,|;|\\|)");
-        logger.debug("ss={}, len(ss)={}", s, ss.length);
         Map<String, String> result = new HashMap<>(ss.length);
         for (String i : ss) {
             String[] kv = i.split("=", 2);
@@ -103,16 +101,11 @@ public class Monitor extends Client {
             else
                 si.loadlevel = Integer.parseInt(kvs.get("loadlevel").trim());
         } else {
-            logger.debug("svrres: {}", kvs);
             ServerInfo _si = si;
             kvs.forEach((k, v) -> {
                 _si.loads.put(k, Integer.parseInt(v));
-                logger.debug("_si.loads: {}", _si.loads);
-                logger.debug("_si: {}", _si);
             });
         }
-
-        logger.debug("{}", getServerInfoMap().get(id));
     }
 
     public Map<String, ServerInfo> getServerInfoMap() {
