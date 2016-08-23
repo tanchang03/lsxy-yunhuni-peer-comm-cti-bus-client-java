@@ -104,7 +104,9 @@ public class Monitor extends Client {
         } else {
             ServerInfo _si = si;
             kvs.forEach((k, v) -> {
-                Integer _v = v == null ? null : Integer.parseInt(v);
+                Integer _v = null;
+                if (v != null)
+                    _v = Integer.parseInt(v);
                 logger.debug("{} : {}", k, _v);
                 _si.loads.put(k, _v);
             });
