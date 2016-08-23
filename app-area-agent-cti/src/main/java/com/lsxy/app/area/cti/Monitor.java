@@ -106,6 +106,7 @@ public class Monitor extends Client {
                 _si.loads.put(k, Integer.parseInt(v));
             });
         }
+        logger.debug("{}", si);
     }
 
     public Map<String, ServerInfo> getServerInfoMap() {

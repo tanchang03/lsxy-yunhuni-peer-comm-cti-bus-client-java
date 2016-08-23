@@ -68,7 +68,6 @@ class LibCallbackHandler implements com.lsxy.app.area.cti.busnetcli.Callbacks {
             String data = null;
             try {
                 data = new String(bytes, "ASCII");
-                logger.debug("{}", data);
             } catch (UnsupportedEncodingException ignore) {
             }
             String finalData = data;
