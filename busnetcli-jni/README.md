@@ -37,3 +37,13 @@ make install
 现在，你得到了 JNI 库文件 `libbusnetcli-jni.so`，别忘了它依赖于 `libbusnetcli.so`
 
 现在，用 JAVA 程序调用它吧，别忘了 `-Djava.library.path=/your/jni.so/dir`
+
+## 共享库路径问题
+`libbusnetcli-jni.so` LINUX 的共享库搜索路径中连接 `libbusnetcli.so ` 。
+
+为了统一部署，我们规定，将这两个库都放到 `usr/local/lib`，并且将这个路径加入到 `ld` 设置：
+
+```sh
+cat "/usr/local/lib" >> /etc/ld.so.conf
+ldconfig
+```
