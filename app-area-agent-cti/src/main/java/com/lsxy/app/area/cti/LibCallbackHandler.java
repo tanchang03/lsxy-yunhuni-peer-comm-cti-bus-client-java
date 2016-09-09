@@ -58,18 +58,19 @@ class LibCallbackHandler implements com.lsxy.app.area.cti.busnetcli.Callbacks {
 
     public void data(Head head, byte[] bytes) {
         logger.debug(">>> data(head={}, dataLength={})", head, bytes.length);
+        String data = null;
+        try {
+            data = new String(bytes, "ASCII");
+            logger.debug("data={}", data);
+        } catch (UnsupportedEncodingException error) {
+            logger.error("Unsupported Encoding data:", error);
+        }
         byte dstType = head.getDstClientType();
         if (dstType == (byte) 3) {
             Monitor monitor = (Monitor) Unit.clients.get(head.getDstClientId());
             if (monitor == null) {
                 logger.error("cannot find client<id={}>", head.getDstClientId());
                 return;
-            }
-            String data = null;
-            try {
-                data = new String(bytes, "ASCII");
-                logger.debug("data={}", data);
-            } catch (UnsupportedEncodingException ignore) {
             }
             String finalData = data;
             monitor.executor.execute(() -> monitor.process(finalData));
@@ -79,9 +80,9 @@ class LibCallbackHandler implements com.lsxy.app.area.cti.busnetcli.Callbacks {
                 logger.error("cannot find client<id={}>", head.getDstClientId());
                 return;
             }
+            String rpcTxt = data;
             commander.executor.execute(() -> {
                 try {
-                    String rpcTxt = new String(bytes, "UTF-8");
                     RpcRequest req = null;
                     RpcResponse res = null;
                     // 收到了RPC事件通知？
