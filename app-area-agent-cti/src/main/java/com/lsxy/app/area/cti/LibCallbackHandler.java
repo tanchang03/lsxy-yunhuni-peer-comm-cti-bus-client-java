@@ -57,7 +57,7 @@ class LibCallbackHandler implements com.lsxy.app.area.cti.busnetcli.Callbacks {
     }
 
     public void data(Head head, byte[] bytes) {
-        logger.debug(">>> data(head={}, dataLength={})", head, bytes.length);
+        logger.debug(">>> data(head={}, dataLength={}: {})", head, bytes.length, bytes.toString());
         byte dstType = head.getDstClientType();
         if (dstType == (byte) 3) {
             Monitor monitor = (Monitor) Unit.clients.get(head.getDstClientId());
