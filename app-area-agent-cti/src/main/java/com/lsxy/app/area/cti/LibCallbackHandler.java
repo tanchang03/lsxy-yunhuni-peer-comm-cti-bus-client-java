@@ -63,18 +63,10 @@ class LibCallbackHandler implements com.lsxy.app.area.cti.busnetcli.Callbacks {
             data = new String(bytes, "ASCII");
             logger.debug("data={}", data);
         } catch (UnsupportedEncodingException error) {
-            logger.error("Unsupported Encoding data:", error);
+            logger.warn("Unsupported Encoding data:", error);
         }
-        byte dstType = head.getDstClientType();
-        if (dstType == (byte) 3) {
-            Monitor monitor = (Monitor) Unit.clients.get(head.getDstClientId());
-            if (monitor == null) {
-                logger.error("cannot find client<id={}>", head.getDstClientId());
-                return;
-            }
-            String finalData = data;
-            monitor.executor.execute(() -> monitor.process(finalData));
-        } else if (dstType == (byte) 10) {
+        byte cmdType = head.getCmdType();
+        if (cmdType == (byte) 3) {
             Commander commander = (Commander) Unit.clients.get(head.getDstClientId());
             if (commander == null) {
                 logger.error("cannot find client<id={}>", head.getDstClientId());
@@ -82,6 +74,7 @@ class LibCallbackHandler implements com.lsxy.app.area.cti.busnetcli.Callbacks {
             }
             String rpcTxt = data;
             commander.executor.execute(() -> {
+                commander.logger.debug(">>> commander<{}> executor.execute()", commander);
                 try {
                     RpcRequest req = null;
                     RpcResponse res = null;
@@ -91,7 +84,6 @@ class LibCallbackHandler implements com.lsxy.app.area.cti.busnetcli.Callbacks {
                             ObjectMapper mapper = new ObjectMapper();
                             req = mapper.readValue(rpcTxt, RpcRequest.class);
                         } catch (JsonProcessingException ignore) {
-
                         }
                         if (req != null) {
                             commander.logger.debug(">>> commander.eventListener.onEvent({})", req);
@@ -100,6 +92,8 @@ class LibCallbackHandler implements com.lsxy.app.area.cti.busnetcli.Callbacks {
                             commander.logger.debug("<<< commander.eventListener.onEvent()");
                             return;
                         }
+                    } else {
+                        commander.logger.warn("commander <{}> has no eventListener!", commander);
                     }
                     // 收到了RPC调用回复？
                     try {
@@ -115,8 +109,19 @@ class LibCallbackHandler implements com.lsxy.app.area.cti.busnetcli.Callbacks {
                     commander.logger.warn("unsupported RPC content received: {}", rpcTxt);
                 } catch (Exception e) {
                     commander.logger.error("error occurred in executor.execute()", e);
+                } finally {
+                    commander.logger.debug("<<< commander<{}> executor.execute()", commander);
                 }
+
             });
+        } else if (cmdType == (byte) 4) {
+            Monitor monitor = (Monitor) Unit.clients.get(head.getDstClientId());
+            if (monitor == null) {
+                logger.error("cannot find client<id={}>", head.getDstClientId());
+                return;
+            }
+            String finalData = data;
+            monitor.executor.execute(() -> monitor.process(finalData));
         }
         logger.debug("<<< data()");
     }
