@@ -61,67 +61,67 @@ class LibCallbackHandler implements com.lsxy.app.area.cti.busnetcli.Callbacks {
         String data = null;
         try {
             data = new String(bytes, "ASCII");
-            logger.debug("data={}", data);
         } catch (UnsupportedEncodingException error) {
             logger.warn("Unsupported Encoding data:", error);
+            logger.debug("bytes={}", bytes);
         }
-        byte cmdType = head.getCmdType();
-        if (cmdType == (byte) 3) {
-            Commander commander = (Commander) Unit.clients.get(head.getDstClientId());
-            if (commander == null) {
-                logger.error("cannot find client<id={}>", head.getDstClientId());
-                return;
-            }
-            String rpcTxt = data;
-            commander.executor.execute(() -> {
-                commander.logger.debug(">>> commander<{}> executor.execute()", commander);
-                try {
-                    RpcRequest req = null;
-                    RpcResponse res = null;
-                    // 收到了RPC事件通知？
-                    if (commander.eventListener != null) {
+        if (data != null) {
+            byte cmdType = head.getCmdType();
+            if (cmdType == (byte) 3) {
+                Commander commander = (Commander) Unit.clients.get(head.getDstClientId());
+                if (commander == null) {
+                    logger.error("cannot find client<id={}>", head.getDstClientId());
+                    return;
+                }
+                String rpcTxt = data;
+                commander.executor.execute(() -> {
+                    commander.logger.debug(">>> commander<{}> executor.execute()", commander);
+                    try {
+                        RpcRequest req = null;
+                        RpcResponse res = null;
+                        // 收到了RPC事件通知？
+                        if (commander.eventListener != null) {
+                            try {
+                                ObjectMapper mapper = new ObjectMapper();
+                                req = mapper.readValue(rpcTxt, RpcRequest.class);
+                            } catch (JsonProcessingException ignore) {
+                            }
+                            if (req != null) {
+                                commander.logger.debug(">>> commander.eventListener.onEvent({})", req);
+                                BusAddress source = new BusAddress(head.getSrcUnitId(), head.getSrcClientId());
+                                commander.eventListener.onEvent(source, req);
+                                commander.logger.debug("<<< commander.eventListener.onEvent()");
+                                return;
+                            }
+                        }
+                        // 收到了RPC调用回复？
                         try {
                             ObjectMapper mapper = new ObjectMapper();
-                            req = mapper.readValue(rpcTxt, RpcRequest.class);
+                            res = mapper.readValue(rpcTxt, RpcResponse.class);
                         } catch (JsonProcessingException ignore) {
                         }
-                        if (req != null) {
-                            commander.logger.debug(">>> commander.eventListener.onEvent({})", req);
-                            BusAddress source = new BusAddress(head.getSrcUnitId(), head.getSrcClientId());
-                            commander.eventListener.onEvent(source, req);
-                            commander.logger.debug("<<< commander.eventListener.onEvent()");
+                        if (res != null) {
+                            Unit.rpcResponded(res);
                             return;
                         }
-                    } else {
-                        commander.logger.warn("commander <{}> has no eventListener!", commander);
+                        // 既不是RPC事件通知，也不是RPC请求回复，只能忽略了。
+                        commander.logger.warn("unsupported RPC content received: {}", rpcTxt);
+                    } catch (Exception e) {
+                        commander.logger.error("error occurred in executor.execute()", e);
+                    } finally {
+                        commander.logger.debug("<<< commander<{}> executor.execute()", commander);
                     }
-                    // 收到了RPC调用回复？
-                    try {
-                        ObjectMapper mapper = new ObjectMapper();
-                        res = mapper.readValue(rpcTxt, RpcResponse.class);
-                    } catch (JsonProcessingException ignore) {
-                    }
-                    if (res != null) {
-                        Unit.rpcResponded(res);
-                        return;
-                    }
-                    // 既不是RPC事件通知，也不是RPC请求回复，只能忽略了。
-                    commander.logger.warn("unsupported RPC content received: {}", rpcTxt);
-                } catch (Exception e) {
-                    commander.logger.error("error occurred in executor.execute()", e);
-                } finally {
-                    commander.logger.debug("<<< commander<{}> executor.execute()", commander);
-                }
 
-            });
-        } else if (cmdType == (byte) 4) {
-            Monitor monitor = (Monitor) Unit.clients.get(head.getDstClientId());
-            if (monitor == null) {
-                logger.error("cannot find client<id={}>", head.getDstClientId());
-                return;
+                });
+            } else if (cmdType == (byte) 4) {
+                Monitor monitor = (Monitor) Unit.clients.get(head.getDstClientId());
+                if (monitor == null) {
+                    logger.error("cannot find client<id={}>", head.getDstClientId());
+                    return;
+                }
+                String finalData = data;
+                monitor.executor.execute(() -> monitor.process(finalData));
             }
-            String finalData = data;
-            monitor.executor.execute(() -> monitor.process(finalData));
         }
         logger.debug("<<< data()");
     }
