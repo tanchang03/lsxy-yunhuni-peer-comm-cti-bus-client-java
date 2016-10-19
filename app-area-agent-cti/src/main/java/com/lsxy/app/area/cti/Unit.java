@@ -132,10 +132,10 @@ public class Unit {
             logger.warn("rpcResponded(response={}) cannot be found in rpcResultMap.", response);
             return;
         }
-        if (response.getResult() != null) {
-            receiver.onResult(response.getResult());
-        } else {
+        if (response.getError() != null) {
             receiver.onError(response.getError());
+        } else {
+            receiver.onResult(response.getResult());
         }
         logger.debug("<<< rpcResponded()");
     }
